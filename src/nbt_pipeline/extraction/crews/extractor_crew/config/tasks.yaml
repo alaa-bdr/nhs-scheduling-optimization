@@ -1,0 +1,33 @@
+extract_task:
+  description: >
+    Read the following theatre note and extract the fields defined by the
+    output schema. These notes are short operating-theatre booking notes, so
+    focus on useful structured information that can be added back to the
+    dataframe: main procedure, component actions, site, laterality, diagnoses
+    or indications, duration, anaesthetic, admission setting, priority,
+    urgency, histology/biopsy/specimen plan, closure or reconstruction plan,
+    equipment, imaging, implants/materials, medications/injections,
+    comorbidities/risk factors, anticoagulation, mobility/access needs,
+    special instructions, and uncertainty.
+
+    Only use information explicitly present in the note. Do not infer from
+    general medical knowledge and do not guess missing values. If the note is
+    empty or only punctuation, set has_extractable_note to false and leave the
+    other fields empty, null, or not_stated as appropriate.
+
+    Normalise anaesthesia to GA, LA, regional, sedation, spinal, epidural, or
+    other. Normalise laterality to left, right, bilateral, midline, or
+    not_stated. Normalise case setting to day_case, inpatient, outpatient, or
+    not_stated. Convert stated durations such as "4 HRS" or "90 mins" into
+    expected_duration_minutes. Preserve question-marked or +/- alternatives in
+    uncertainties instead of treating them as definite facts.
+
+    Use the OPCS-4 lookup tool only if the note itself contains a procedure
+    code, to confirm the procedure's chapter/category.
+
+    Theatre note:
+    {theatre_note}
+  expected_output: >
+    A JSON object matching the TheatreNoteExtraction schema, with no invented
+    information.
+  agent: extractor

@@ -1,0 +1,18 @@
+[project]
+name = "nbt-pipeline"
+version = "0.1.0"
+description = "NBT theatre notes preprocessing and CrewAI-based structured extraction"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools]==1.14.7",
+    "pandas",
+    "openpyxl",
+    "python-dotenv",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nbt_pipeline"]
