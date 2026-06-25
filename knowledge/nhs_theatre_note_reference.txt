@@ -1,0 +1,61 @@
+NBT theatre-note extraction reference
+
+Use this reference only to normalise and validate information explicitly stated in a theatre note. Do not add facts that are absent from the note.
+
+Core extraction rule
+- Extract stated facts from the theatre note.
+- Preserve uncertainty. Items marked with ?, possible, probable, or +/- should usually be captured in uncertainties unless the note clearly states them as definite.
+- Empty notes, punctuation-only notes, and placeholder notes such as "." or "...." should have has_extractable_note=false.
+
+Common theatre-note abbreviations
+- GA: general anaesthetic.
+- LA: local anaesthetic.
+- RA or regional: regional anaesthetic.
+- SA or spinal: spinal anaesthetic when the context is anaesthesia.
+- EUA: examination under anaesthetic.
+- TURP: transurethral resection of prostate.
+- WLE: wide local excision.
+- FTSG: full thickness skin graft.
+- DC, D/C, day case: day case.
+- IP: inpatient.
+- OP: outpatient.
+- ICU or ITU required: special instruction that critical care is required after the procedure.
+- X-ray, screening, image intensifier, II: imaging or image guidance.
+- C+C, curettage and cautery: procedure component when stated in the note.
+- PSOP: pre-operative assessment or pre-surgery outpatient/pre-op process; keep as an abbreviation expansion only when context supports it.
+- LRTI: ligament reconstruction and tendon interposition when used with trapeziectomy/hand surgery.
+- ARCR: arthroscopic rotator cuff repair when used in shoulder surgery context.
+- AAA: abdominal aortic aneurysm when used in vascular surgery context.
+- SPC: suprapubic catheter in urology context.
+- TULA: transurethral laser ablation in flexible cystoscopy/urology context when stated as a procedure.
+
+Normalisation rules
+- Laterality must be one of left, right, bilateral, midline, not_stated.
+- Anaesthesia must be one or more of GA, LA, regional, sedation, spinal, epidural, other.
+- Case setting must be one of day_case, inpatient, outpatient, not_stated.
+- Convert duration to minutes. Examples: 90 mins = 90; 60mins = 60; 4 hrs = 240.
+- Preserve priority codes exactly when present, for example P2, P3, P4, D2, RCS Level 2.
+- Urgency and wait-time text can include terms such as 2WW, urgent non cancer, routine, maximum wait 6 weeks.
+
+OPCS-4 procedure-code conventions
+- OPCS-4 is the NHS Classification of Interventions and Procedures.
+- A common OPCS-4 code format is one letter followed by three digits, often displayed with a dot before the final digit, for example A01.1.
+- Procedure codes in the note should be preserved exactly in procedure_codes_mentioned.
+- Do not invent an OPCS-4 code from the free text.
+- Use the OPCS lookup tool only when a procedure code is explicitly present in the note.
+
+Field placement guidance
+- procedure_summary: short plain-English summary of the main procedure.
+- procedure_components: actions such as excision, biopsy, repair, cystoscopy, closure, decompression, graft, flap, injection, insertion, removal.
+- diagnoses_or_indications: suspected cancer, SCC, melanoma, retention, laceration, Fowler's syndrome, cardiac dysfunction, symptoms, or reasons for operation.
+- anatomical_sites: named body parts or procedure targets, including side/site wording from the note.
+- biopsy_or_specimen_plan: biopsy, histology, specimen, pathology, margins, or tissue analysis plan.
+- closure_or_reconstruction_plan: direct closure, flap, graft, repair, reconstruction, tendon interposition.
+- equipment_required: named equipment, sets, scopes, saws, microscopes, stacks, theatre systems, or manufacturer-specific sets.
+- imaging_required: X-ray, image intensifier, screening, ultrasound, fluoroscopy, CT, MRI, scope guidance when explicitly requested as imaging.
+- implants_or_materials: plates, screws, anchors, grafts, clips, catheters, stents, Botox units, named implant systems.
+- medications_or_injections: named drugs or injections such as Botox, antibiotic injection, local anaesthetic drug if named.
+- comorbidities_or_risk_factors: BMI, pregnancy, asthma, HTN, AF, cardiac dysfunction, severe MR, renal function, ASA-like risk information, relevant past history.
+- anticoagulation_status: anticoagulation yes/no or named anticoagulant such as apixaban, warfarin, DOAC.
+- mobility_or_access_needs: reduced mobility, transfer needs, access needs, or support requirements.
+- special_instructions: scheduling constraints, ICU/ITU need, named clinician request, manufacturing delay, choose and book transfer, pre-op requirements.

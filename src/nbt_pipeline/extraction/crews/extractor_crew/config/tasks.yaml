@@ -28,6 +28,43 @@ extract_task:
     Theatre note:
     {theatre_note}
   expected_output: >
-    A JSON object matching the TheatreNoteExtraction schema, with no invented
-    information.
+    A draft JSON object matching the TheatreNoteExtraction schema, with no
+    invented information.
   agent: extractor
+
+review_task:
+  description: >
+    Review the draft extraction for the same theatre note. Use NHS-style
+    theatre booking and clinical coding conventions only as validation
+    context: they can help you normalise and check the output, but they must
+    not be used to add facts that are absent from the note.
+
+    Check that:
+    - has_extractable_note is false for empty, punctuation-only, or
+      content-free notes.
+    - stated durations are converted to minutes.
+    - anaesthesia is normalised to GA, LA, regional, sedation, spinal,
+      epidural, or other.
+    - laterality is normalised to left, right, bilateral, midline, or
+      not_stated.
+    - case setting is normalised to day_case, inpatient, outpatient, or
+      not_stated.
+    - question-marked diagnoses, alternatives, and +/- items are captured in
+      uncertainties unless clearly stated as definite.
+    - equipment, imaging, implants/materials, medications, histology,
+      comorbidities, anticoagulation, mobility needs, and special
+      instructions are kept in the correct fields.
+    - abbreviations are expanded only when the meaning is clear from the note
+      or very standard in the theatre context.
+    - procedure codes mentioned in the note are preserved exactly, and the
+      OPCS-4 lookup tool is used only when a real procedure code is present.
+
+    Return the corrected final extraction only. Do not include critique,
+    explanation, markdown, or extra keys.
+
+    Theatre note:
+    {theatre_note}
+  expected_output: >
+    The final corrected JSON object matching the TheatreNoteExtraction schema,
+    with no unsupported or invented information.
+  agent: reviewer
