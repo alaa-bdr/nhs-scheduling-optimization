@@ -30,6 +30,10 @@ extract_task:
     2WW, or anaesthetic codes such as GA/LA in procedure_codes_mentioned.
     Negative statements such as "Xray no" or "X-ray No" mean imaging is not
     requested; do not add them to imaging_required.
+    Do not put anaesthetic-only values such as GA or LA in
+    procedure_components. Do not put duration or admission setting text such as
+    "60 mins" or "day case" in special_instructions; use the duration and
+    case_setting fields.
 
     Theatre note:
     {theatre_note}
@@ -64,6 +68,8 @@ review_task:
     - equipment, imaging, implants/materials, medications, histology,
       comorbidities, anticoagulation, mobility needs, and special
       instructions are kept in the correct fields.
+    - anaesthetic-only values such as GA or LA are not procedure components.
+    - duration and admission setting text are not special instructions.
     - negative imaging statements such as "Xray no" are not listed as required
       imaging.
     - abbreviations are expanded only when the meaning is clear from the note

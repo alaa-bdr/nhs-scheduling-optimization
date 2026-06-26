@@ -36,6 +36,25 @@ EXTRACTION_CREW_MAX_ITER = int(
 EXTRACTION_CREW_MAX_RPM = int(
     os.environ.get("NBT_EXTRACTION_CREW_MAX_RPM", os.environ.get("NBT_EXTRACTION_AGENT_MAX_RPM", "10"))
 )
-EXTRACTION_EMBEDDING_MODEL = os.environ.get("NBT_EXTRACTION_EMBEDDING_MODEL", "gemini-embedding-001")
+EXTRACTION_EMBEDDING_PROVIDER = os.environ.get("NBT_EXTRACTION_EMBEDDING_PROVIDER", "ollama")
+EXTRACTION_EMBEDDING_MODEL = os.environ.get("NBT_EXTRACTION_EMBEDDING_MODEL", "nomic-embed-text")
+EXTRACTION_EMBEDDING_URL = os.environ.get("NBT_EXTRACTION_EMBEDDING_URL", "http://localhost:11434/api/embeddings")
 EXTRACTION_USE_PDF_KNOWLEDGE = os.environ.get("NBT_EXTRACTION_USE_PDF_KNOWLEDGE", "false").lower() == "true"
-print(CREWAI_CHROMA_DIR)
+
+
+def extraction_embedder_config() -> dict:
+    if EXTRACTION_EMBEDDING_PROVIDER == "ollama":
+        return {
+            "provider": "ollama",
+            "config": {
+                "model_name": EXTRACTION_EMBEDDING_MODEL,
+                "url": EXTRACTION_EMBEDDING_URL,
+            },
+        }
+
+    return {
+        "provider": EXTRACTION_EMBEDDING_PROVIDER,
+        "config": {
+            "model_name": EXTRACTION_EMBEDDING_MODEL,
+        },
+    }

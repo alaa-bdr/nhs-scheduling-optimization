@@ -1,9 +1,9 @@
 from nbt_pipeline.config import (
     EXTRACTION_CREW_MAX_ITER,
     EXTRACTION_CREW_MAX_RPM,
-    EXTRACTION_EMBEDDING_MODEL,
     EXTRACTION_MODEL,
     EXTRACTION_USE_PDF_KNOWLEDGE,
+    extraction_embedder_config,
 )
 from nbt_pipeline.extraction.guardrails import validate_theatre_note_extraction
 from nbt_pipeline.extraction.schemas import TheatreNoteExtraction
@@ -87,11 +87,5 @@ class ExtractorCrew:
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
-            embedder={
-                "provider": "google-generativeai",
-                "config": {
-                    "model_name": EXTRACTION_EMBEDDING_MODEL,
-                    "task_type": "RETRIEVAL_DOCUMENT",
-                },
-            },
+            embedder=extraction_embedder_config(),
         )
