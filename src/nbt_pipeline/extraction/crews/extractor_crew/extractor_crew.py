@@ -5,6 +5,7 @@ from nbt_pipeline.config import (
     EXTRACTION_MODEL,
     EXTRACTION_USE_PDF_KNOWLEDGE,
 )
+from nbt_pipeline.extraction.guardrails import validate_theatre_note_extraction
 from nbt_pipeline.extraction.schemas import TheatreNoteExtraction
 
 from crewai import Agent, Crew, Process, Task
@@ -76,6 +77,8 @@ class ExtractorCrew:
             config=self.tasks_config["review_task"],
             context=[self.extract_task()],
             output_pydantic=TheatreNoteExtraction,
+            guardrail=validate_theatre_note_extraction,
+            guardrail_max_retries=1,
         )
 
     @crew

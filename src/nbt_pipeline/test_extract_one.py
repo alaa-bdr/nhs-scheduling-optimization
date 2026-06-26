@@ -1,6 +1,8 @@
 import argparse
 import json
 
+import pandas as pd
+
 from nbt_pipeline.extraction.pipeline import extract_theatre_notes
 from nbt_pipeline.preprocessing.load import load_nbt_smallset
 
@@ -8,27 +10,19 @@ from nbt_pipeline.preprocessing.load import load_nbt_smallset
 def format_value(value) -> str:
     if isinstance(value, (list, dict)):
         return json.dumps(value, ensure_ascii=False)
-    if value is None:
-        return ""
+    if value is None or pd.isna(value):
+        return "null"
     return str(value)
 
 
 def print_extraction_result(result) -> None:
     extracted_columns = [column for column in result.columns if column.startswith("theatre_notes_")]
+    output = result[["theatre_notes", *extracted_columns]].copy()
+    output = output.rename(columns={column: column.replace("theatre_notes_", "") for column in extracted_columns})
+    output = output.map(format_value)
 
-    for row_number, (_, row) in enumerate(result.iterrows(), start=1):
-        print(f"\n=== Theatre Note {row_number} ===")
-        print(row["theatre_notes"])
-        print()
-
-        rows = [
-            {
-                "field": column.replace("theatre_notes_", ""),
-                "value": format_value(row[column]),
-            }
-            for column in extracted_columns
-        ]
-        print(__import__("pandas").DataFrame(rows).to_string(index=False))
+    with pd.option_context("display.max_columns", None, "display.max_colwidth", 80, "display.width", 240):
+        print(output.to_string(index=False))
 
 
 def run() -> None:
