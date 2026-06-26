@@ -34,15 +34,19 @@ Normalisation rules
 - Anaesthesia must be one or more of GA, LA, regional, sedation, spinal, epidural, other.
 - Case setting must be one of day_case, inpatient, outpatient, not_stated.
 - Convert duration to minutes. Examples: 90 mins = 90; 60mins = 60; 4 hrs = 240.
+- Missing duration should be null, not 0.
+- Missing optional text fields should be null. Do not use empty strings.
 - Preserve priority codes exactly when present, for example P2, P3, P4, D2, RCS Level 2.
 - Urgency and wait-time text can include terms such as 2WW, urgent non cancer, routine, maximum wait 6 weeks.
+- Priority codes such as P2, P3, P4 and urgency markers such as 2WW are not OPCS procedure codes.
+- Negative imaging statements such as Xray no, X-ray No, screening no, or image intensifier no mean imaging is not requested and should not be added to imaging_required.
 
 OPCS-4 procedure-code conventions
 - OPCS-4 is the NHS Classification of Interventions and Procedures.
 - A common OPCS-4 code format is one letter followed by three digits, often displayed with a dot before the final digit, for example A01.1.
 - Procedure codes in the note should be preserved exactly in procedure_codes_mentioned.
 - Do not invent an OPCS-4 code from the free text.
-- Use the OPCS lookup tool only when a procedure code is explicitly present in the note.
+- Do not put priority codes such as P2, P3, P4, urgency markers such as 2WW, or anaesthetic codes such as GA/LA in procedure_codes_mentioned.
 
 Field placement guidance
 - procedure_summary: short plain-English summary of the main procedure.

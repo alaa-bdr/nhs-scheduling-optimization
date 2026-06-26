@@ -13,7 +13,9 @@ extract_task:
     Only use information explicitly present in the note. Do not infer from
     general medical knowledge and do not guess missing values. If the note is
     empty or only punctuation, set has_extractable_note to false and leave the
-    other fields empty, null, or not_stated as appropriate.
+    other fields empty, null, or not_stated as appropriate. For optional string
+    fields, use null when absent. For list fields, use an empty list when
+    absent. Do not use empty strings. Do not use 0 for missing durations.
 
     Normalise anaesthesia to GA, LA, regional, sedation, spinal, epidural, or
     other. Normalise laterality to left, right, bilateral, midline, or
@@ -22,8 +24,12 @@ extract_task:
     expected_duration_minutes. Preserve question-marked or +/- alternatives in
     uncertainties instead of treating them as definite facts.
 
-    Use the OPCS-4 lookup tool only if the note itself contains a procedure
-    code, to confirm the procedure's chapter/category.
+    If the note itself contains OPCS-like procedure codes, preserve them exactly
+    in the procedure_codes_mentioned field. Do not invent or infer missing
+    codes. Do not put priority codes such as P2, P3 or P4, urgency text such as
+    2WW, or anaesthetic codes such as GA/LA in procedure_codes_mentioned.
+    Negative statements such as "Xray no" or "X-ray No" mean imaging is not
+    requested; do not add them to imaging_required.
 
     Theatre note:
     {theatre_note}
@@ -43,6 +49,10 @@ review_task:
     - has_extractable_note is false for empty, punctuation-only, or
       content-free notes.
     - stated durations are converted to minutes.
+    - missing durations are null, never 0.
+    - optional missing string fields are null, not empty strings and not
+      not_stated, unless the schema explicitly defines not_stated as an
+      allowed literal.
     - anaesthesia is normalised to GA, LA, regional, sedation, spinal,
       epidural, or other.
     - laterality is normalised to left, right, bilateral, midline, or
@@ -54,10 +64,13 @@ review_task:
     - equipment, imaging, implants/materials, medications, histology,
       comorbidities, anticoagulation, mobility needs, and special
       instructions are kept in the correct fields.
+    - negative imaging statements such as "Xray no" are not listed as required
+      imaging.
     - abbreviations are expanded only when the meaning is clear from the note
       or very standard in the theatre context.
-    - procedure codes mentioned in the note are preserved exactly, and the
-      OPCS-4 lookup tool is used only when a real procedure code is present.
+    - OPCS-like procedure codes mentioned in the note are preserved exactly.
+      Priority codes such as P2/P3/P4 and urgency markers such as 2WW are not
+      procedure codes.
 
     Return the corrected final extraction only. Do not include critique,
     explanation, markdown, or extra keys.

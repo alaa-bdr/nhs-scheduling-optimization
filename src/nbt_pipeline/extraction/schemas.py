@@ -20,7 +20,10 @@ class TheatreNoteExtraction(BaseModel):
     )
     procedure_codes_mentioned: list[str] = Field(
         default_factory=list,
-        description="Procedure or classification codes explicitly written in the note, if any.",
+        description=(
+            "OPCS-like procedure/classification codes explicitly written in the note, if any. "
+            "Do not include priority codes such as P2, P3, P4 or urgency codes such as 2WW."
+        ),
     )
     diagnoses_or_indications: list[str] = Field(
         default_factory=list,
@@ -40,7 +43,7 @@ class TheatreNoteExtraction(BaseModel):
     )
     expected_duration_minutes: Optional[int] = Field(
         default=None,
-        description="Expected or listed duration in minutes, only when stated in the note.",
+        description="Expected or listed duration in minutes, only when stated in the note. Use null, never 0, when absent.",
     )
     case_setting: Literal["day_case", "inpatient", "outpatient", "not_stated"] = Field(
         default="not_stated",
@@ -48,11 +51,11 @@ class TheatreNoteExtraction(BaseModel):
     )
     priority_code: Optional[str] = Field(
         default=None,
-        description="Priority code exactly as stated, e.g. P2, P3, P4, D2, RCS Level 2.",
+        description="Priority code exactly as stated, e.g. P2, P3, P4, D2, RCS Level 2. Use null when absent.",
     )
     urgency_text: Optional[str] = Field(
         default=None,
-        description="Free-text urgency or waiting-time statement, e.g. urgent non cancer, 2WW, maximum wait 6 weeks.",
+        description="Free-text urgency or waiting-time statement, e.g. urgent non cancer, 2WW, maximum wait 6 weeks. Use null when absent.",
     )
     requires_histology: Optional[bool] = Field(
         default=None,
@@ -60,11 +63,11 @@ class TheatreNoteExtraction(BaseModel):
     )
     biopsy_or_specimen_plan: Optional[str] = Field(
         default=None,
-        description="Biopsy, specimen, pathology, or histology plan if mentioned.",
+        description="Biopsy, specimen, pathology, or histology plan if mentioned. Use null when absent.",
     )
     closure_or_reconstruction_plan: Optional[str] = Field(
         default=None,
-        description="Closure, graft, flap, repair, reconstruction, or direct-closure plan if mentioned.",
+        description="Closure, graft, flap, repair, reconstruction, or direct-closure plan if mentioned. Use null when absent.",
     )
     equipment_required: list[str] = Field(
         default_factory=list,
@@ -72,7 +75,10 @@ class TheatreNoteExtraction(BaseModel):
     )
     imaging_required: list[str] = Field(
         default_factory=list,
-        description="Imaging or guidance requested, e.g. X-ray, image intensifier, ultrasound, screening.",
+        description=(
+            "Imaging or guidance explicitly requested, e.g. X-ray, image intensifier, ultrasound, screening. "
+            "Do not include negative statements such as 'Xray no' or 'X-ray No'."
+        ),
     )
     implants_or_materials: list[str] = Field(
         default_factory=list,
@@ -88,11 +94,11 @@ class TheatreNoteExtraction(BaseModel):
     )
     anticoagulation_status: Optional[str] = Field(
         default=None,
-        description="Anticoagulant status or named anticoagulant if explicitly mentioned.",
+        description="Anticoagulant status or named anticoagulant if explicitly mentioned. Use null when absent.",
     )
     mobility_or_access_needs: Optional[str] = Field(
         default=None,
-        description="Mobility, access, transfer, or patient-support needs if mentioned.",
+        description="Mobility, access, transfer, or patient-support needs if mentioned. Use null when absent.",
     )
     special_instructions: list[str] = Field(
         default_factory=list,
