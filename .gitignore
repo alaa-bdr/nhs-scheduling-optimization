@@ -8,3 +8,5 @@ __pycache__/
 build/
 dist/
 data/processed/
+*.ipynb
+.ipynb_checkpoints/
