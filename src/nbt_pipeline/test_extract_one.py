@@ -1,5 +1,7 @@
 import argparse
 import json
+import sys
+from pathlib import Path
 
 import pandas as pd
 
@@ -16,23 +18,31 @@ def format_value(value) -> str:
 
 
 def print_extraction_result(result) -> None:
-    extracted_columns = [column for column in result.columns if column.startswith("theatre_notes_")]
-    output = result[["theatre_notes", *extracted_columns]].copy()
-    output = output.rename(columns={column: column.replace("theatre_notes_", "") for column in extracted_columns})
+    output = result.copy()
     output = output.map(format_value)
 
-    with pd.option_context("display.max_columns", None, "display.max_colwidth", 80, "display.width", 240):
-        print(output.to_string(index=False))
+    with pd.option_context("display.max_columns", None, "display.max_colwidth", 80, "display.width", 320):
+        table = output.to_string(index=False)
+        encoding = sys.stdout.encoding or "utf-8"
+        print(table.encode(encoding, errors="replace").decode(encoding))
 
 
 def run() -> None:
     parser = argparse.ArgumentParser(description="Run a tiny theatre-note extraction test.")
-    parser.add_argument("--rows", type=int, default=5, help="Number of non-empty theatre notes to test.")
+    parser.add_argument("--rows", type=int, default=20, help="Number of non-empty theatre notes to test.")
+    parser.add_argument("--output", help="Path to save the joined extraction result.")
     args = parser.parse_args()
 
     df = load_nbt_smallset()
     sample = df[df["theatre_notes"].notna()].head(args.rows).copy()
     result = extract_theatre_notes(sample)
+    output_path = Path(args.output or f"result/theatre_notes_test_{args.rows}_rows.xlsx")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if output_path.suffix == ".xlsx":
+        result.to_excel(output_path, index=False)
+    else:
+        result.to_csv(output_path, index=False)
+    print(f"Saved joined result to: {output_path}")
     print_extraction_result(result)
 
 
