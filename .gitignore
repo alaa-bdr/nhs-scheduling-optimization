@@ -1,0 +1,11 @@
+.venv/
+.venv-1/
+.crewai_storage/
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+build/
+dist/
+data/processed/
+result/
