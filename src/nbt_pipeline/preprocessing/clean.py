@@ -1,5 +1,7 @@
 import pandas as pd
 
+from nbt_pipeline.preprocessing.codes import VALID_CODE_VALUES, _normalise_code
+
 
 def column_overview(df: pd.DataFrame) -> pd.DataFrame:
     """Return dtype, missingness, and cardinality information for each column."""
@@ -65,12 +67,20 @@ def clean_suspicious_numeric_values(df: pd.DataFrame) -> pd.DataFrame:
         )
         df.loc[invalid_age, "age_at_operation"] = pd.NA
 
-    if "ASAScore" in df:
-        invalid_asa = (
-            (df["ASAScore"] <= 0)
-            | (df["ASAScore"] > 6)
-        )
-        df.loc[invalid_asa, "ASAScore"] = pd.NA
+    return df
+
+
+def clean_invalid_coded_values(df: pd.DataFrame) -> pd.DataFrame:
+    """Convert unexpected values in known coded columns to missing values."""
+    df = df.copy()
+
+    for column, valid_values in VALID_CODE_VALUES.items():
+        if column not in df:
+            continue
+
+        codes = df[column].map(_normalise_code)
+        invalid_mask = codes.notna() & ~codes.isin(valid_values)
+        df.loc[invalid_mask, column] = pd.NA
 
     return df
 
@@ -79,4 +89,5 @@ def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
     """Apply deterministic cleaning steps that are safe for the raw dataset."""
     df = clean_blank_text(df)
     df = clean_suspicious_numeric_values(df)
+    df = clean_invalid_coded_values(df)
     return df

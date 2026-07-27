@@ -21,7 +21,16 @@ def extract_session_theatre_code(session_desc: str | None) -> str | None:
     match = SESSION_THEATRE_PATTERN.search(text)
     if not match:
         return None
-    return re.sub(r"\s+", "", match.group(1)).upper()
+    code = re.sub(r"\s+", "", match.group(1)).upper()
+    return code
+
+
+def extract_session_code_prefix(session_code: str | None) -> str | None:
+    """Extract the letter prefix from a session theatre code."""
+    if session_code is None or pd.isna(session_code):
+        return None
+    match = re.match(r"([A-Z]+)", str(session_code).strip().upper())
+    return match.group(1) if match else None
 
 
 def extract_session_list_type(session_desc: str | None) -> str | None:
@@ -79,6 +88,7 @@ def add_session_description_features(df: pd.DataFrame) -> pd.DataFrame:
 
     session_desc = df["SessionIDdesc"]
     df["session_theatre_code"] = session_desc.apply(extract_session_theatre_code)
+    df["session_code_prefix"] = df["session_theatre_code"].apply(extract_session_code_prefix)
     df["session_list_type"] = session_desc.apply(extract_session_list_type)
     df["session_time_band"] = session_desc.apply(extract_session_time_band)
     df["session_consultant"] = session_desc.apply(extract_session_consultant)

@@ -4,6 +4,7 @@ import pandas as pd
 from nbt_pipeline.preprocessing.codes import add_code_labels
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.specialty import add_specialty_column
+from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
 
 
 TIME_COLUMNS = [
@@ -90,6 +91,7 @@ def add_theatre_note_flags(df: pd.DataFrame) -> pd.DataFrame:
 def add_feature_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Add reusable analysis/model features."""
     df = add_code_labels(df)
+    df = add_theatre_room_features(df)
     df = add_session_description_features(df)
     df = add_specialty_column(df)
     df = add_duration_features(df)
