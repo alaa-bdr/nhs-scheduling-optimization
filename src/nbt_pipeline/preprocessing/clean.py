@@ -48,6 +48,35 @@ def clean_blank_text(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def clean_suspicious_numeric_values(df: pd.DataFrame) -> pd.DataFrame:
+    """Convert clearly invalid numeric values to missing values."""
+    df = df.copy()
+
+    if "ExpectedDurationMins" in df:
+        df.loc[df["ExpectedDurationMins"] <= 0, "ExpectedDurationMins"] = pd.NA
+
+    if "operation_length_mins" in df:
+        df.loc[df["operation_length_mins"] <= 0, "operation_length_mins"] = pd.NA
+
+    if "age_at_operation" in df:
+        invalid_age = (
+            (df["age_at_operation"] <= 0)
+            | (df["age_at_operation"] > 125)
+        )
+        df.loc[invalid_age, "age_at_operation"] = pd.NA
+
+    if "ASAScore" in df:
+        invalid_asa = (
+            (df["ASAScore"] <= 0)
+            | (df["ASAScore"] > 6)
+        )
+        df.loc[invalid_asa, "ASAScore"] = pd.NA
+
+    return df
+
+
 def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
     """Apply deterministic cleaning steps that are safe for the raw dataset."""
-    return clean_blank_text(df)
+    df = clean_blank_text(df)
+    df = clean_suspicious_numeric_values(df)
+    return df
