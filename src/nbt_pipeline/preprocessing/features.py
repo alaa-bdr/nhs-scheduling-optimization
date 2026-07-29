@@ -1,68 +1,27 @@
-import numpy as np
 import pandas as pd
 
 from nbt_pipeline.preprocessing.codes import add_code_labels
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.specialty import add_specialty_column
 from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
-
-
-TIME_COLUMNS = [
-    "into_theatre",
-    "anaesthetic_start_time",
-    "incision",
-    "closure",
-    "out_of_theatre",
-    "operation_end_time",
-    "recovery_time",
-]
-
-
-def parse_time_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Parse theatre time-of-day columns as timedeltas."""
-    df = df.copy()
-    for column in TIME_COLUMNS:
-        if column in df:
-            df[column] = pd.to_timedelta(df[column].astype("string"), errors="coerce")
-    return df
-
-
-def minutes_between(start, end) -> float:
-    """Return minutes between two time-of-day values, allowing midnight rollover."""
-    if pd.isna(start) or pd.isna(end):
-        return np.nan
-    delta = end - start
-    if delta < pd.Timedelta(0):
-        delta += pd.Timedelta(days=1)
-    return delta.total_seconds() / 60
-
-
-def calculate_row_duration(row: pd.Series) -> float:
-    """Calculate operation duration using the most reliable available pair of times."""
-    incision_to_closure = minutes_between(row.get("incision"), row.get("closure"))
-    if not pd.isna(incision_to_closure):
-        return incision_to_closure
-
-    theatre_time = minutes_between(row.get("into_theatre"), row.get("out_of_theatre"))
-    if not pd.isna(theatre_time):
-        return theatre_time
-
-    if not pd.isna(row.get("operation_length_mins")):
-        return row.get("operation_length_mins")
-
-    anaesthetic_to_end = minutes_between(row.get("anaesthetic_start_time"), row.get("operation_end_time"))
-    if not pd.isna(anaesthetic_to_end):
-        return anaesthetic_to_end
-
-    return np.nan
+from nbt_pipeline.preprocessing.time import validate_operation_length_rule
 
 
 def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
     """Add planned-vs-actual duration features."""
-    df = parse_time_columns(df)
-    df["calculated_operation_length_mins"] = df.apply(calculate_row_duration, axis=1)
+    df = df.copy()
 
-    if "ExpectedDurationMins" in df:
+    if "operation_length_mins" in df:
+        df["calculated_operation_length_mins"] = df["operation_length_mins"]
+
+        try:
+            validated = validate_operation_length_rule(df)
+            df["operation_length_rule_valid"] = validated["operation_length_rule_valid"]
+            df["time_sequence_valid"] = validated["time_sequence_valid"]
+        except KeyError:
+            pass
+
+    if "ExpectedDurationMins" in df and "calculated_operation_length_mins" in df:
         df["duration_error_mins"] = df["calculated_operation_length_mins"] - df["ExpectedDurationMins"]
         df["is_overrun"] = df["duration_error_mins"] > 0
         df["overrun_minutes"] = df["duration_error_mins"].clip(lower=0)
