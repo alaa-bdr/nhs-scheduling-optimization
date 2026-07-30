@@ -27,6 +27,13 @@ The current branch is for time column inspection and validation. The raw dataset
 - Compare operation length by `ASAScore`.
 - Use median as well as mean because operation durations contain outliers.
 
+## Questions for supervisor
+
+- Confirm the meaning of generic theatre values such as `THEATRE 01`. These may be unclear because they do not include a specific area such as Brunel, Parkview, Cotswold, or Gynae.
+- Ask whether room numbers such as `TH 01`, `TH 02`, and `TH 11` are local to each theatre area or whether they refer to the same physical rooms across the hospital.
+- Current assumption: `BRUNEL TH 01`, `PARKVIEW TH01`, `COTSWOLD TH01`, and `GYNAE TH 01` should be treated as different locations unless the supervisor confirms that the number has a shared hospital-wide meaning.
+- Keep the original `TheatreRoom` column as the safest exact room label until this is confirmed.
+
 ## Modelling preparation
 
 - Decide the target variable before modelling.
