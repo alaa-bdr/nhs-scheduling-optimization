@@ -25,6 +25,7 @@ def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
         df["duration_error_mins"] = df["calculated_operation_length_mins"] - df["ExpectedDurationMins"]
         df["is_overrun"] = df["duration_error_mins"] > 0
         df["overrun_minutes"] = df["duration_error_mins"].clip(lower=0)
+        df["underrun_minutes"] = (-df["duration_error_mins"]).clip(lower=0)
 
     return df
 
