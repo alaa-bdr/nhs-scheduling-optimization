@@ -66,22 +66,6 @@ Current rule: impossible values are cleaned to `NaN`; ambiguous values are kept,
 - Compare operation length by `ASAScore`.
 - Use median as well as mean because operation durations contain outliers.
 
-## Questions for supervisor
-
-- Confirm whether the current cleaning rules are acceptable: invalid duration values `<= 0`, impossible age values, invalid ASA values, and invalid coded-category values are converted to `NaN` in `analysis_df`.
-- Ask whether missing values should be left as `NaN` for now, or whether any specific columns should be filled using a local operational rule.
-- Ask whether suspicious time rows should be excluded from duration modelling later, or kept with validation flags.
-- Confirm the meaning of generic theatre values such as `THEATRE 01`. These may be unclear because they do not include a specific area such as Brunel, Parkview, Cotswold, or Gynae.
-- Ask whether room numbers such as `TH 01`, `TH 02`, and `TH 11` are local to each theatre area or whether they refer to the same physical rooms across the hospital.
-- Current assumption: `BRUNEL TH 01`, `PARKVIEW TH01`, `COTSWOLD TH01`, and `GYNAE TH 01` should be treated as different locations unless the supervisor confirms that the number has a shared hospital-wide meaning.
-- Keep the original `TheatreRoom` column as the safest exact room label until this is confirmed.
-- Confirm whether `GYNAE TH B` is a valid room label and should be kept as room number `B`.
-- Confirm whether `TTH` in `SessionIDdesc` is a typo for `TH`, and whether it can be standardised.
-- Ask whether `MOBILE IR`, `PACING ROOM`, and `HYBRID THEATRE` should be treated as valid named locations with no room number.
-- Ask whether `theatre_notes = "."` should be treated as a missing note.
-- Ask whether missing `PriorityLevelCode`, `recovery_time`, and `theat_anae_1_national_code` are expected in normal data capture.
-- Ask whether consultant/staff-code columns represent different roles or should match in some cases.
-
 ## Modelling preparation
 
 - Decide the target variable before modelling.
@@ -94,3 +78,8 @@ Current rule: impossible values are cleaned to `NaN`; ambiguous values are kept,
 ## Important project decision
 
 The time reconstruction rule looks useful, but it is inferred from the dataset rather than confirmed by official documentation. Use it for validation and quality flags first. Only add inferred time columns to the main pipeline after the rule has been reviewed and accepted.
+
+## Related notes
+
+- Project target: `notes/project_target.md`
+- Supervisor questions: `notes/supervisor_questions.md`
