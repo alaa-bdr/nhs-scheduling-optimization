@@ -51,3 +51,17 @@ These questions should be discussed before final cleaning, feature engineering, 
 - Is `operation_length_mins` the best first modelling target for theatre scheduling?
 - Should secondary targets such as `is_overrun`, `overrun_minutes`, and `underrun_minutes` also be modelled?
 - Are there local operational rules that define what counts as an important overrun or bottleneck?
+
+## Overrun and bottleneck definition
+
+- What threshold should define a meaningful overrun?
+- Should very small overruns, such as 1-5 minutes, be treated as normal variation rather than real delay?
+- Is it reasonable to classify overruns as:
+  - close to planned: -5 to +5 minutes
+  - minor overrun: 6 to 15 minutes
+  - moderate overrun: 16 to 30 minutes
+  - major overrun: more than 30 minutes
+- Should bottlenecks be defined using both overrun frequency and overrun size?
+- Is the following rule acceptable for EDA: a stronger bottleneck should have high case count, high overrun rate, and high median or total overrun minutes?
+- Should we use `median_overrun_minutes`, `total_overrun_minutes`, and `case_count` together instead of relying only on overrun rate?
+- Should under-used planned time also be analysed using `underrun_minutes`, because finishing much earlier than planned may indicate inefficient scheduling?
