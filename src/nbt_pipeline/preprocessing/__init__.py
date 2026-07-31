@@ -1,5 +1,6 @@
 from nbt_pipeline.preprocessing.clean import (
     blank_like_summary,
+    cleaning_change_summary,
     clean_dataset,
     clean_invalid_coded_values,
     column_overview,
@@ -23,6 +24,7 @@ __all__ = [
     "add_theatre_room_features",
     "blank_like_summary",
     "build_preprocessed_dataset",
+    "cleaning_change_summary",
     "clean_dataset",
     "clean_invalid_coded_values",
     "clean_suspicious_numeric_values",

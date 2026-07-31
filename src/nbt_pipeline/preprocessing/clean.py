@@ -91,3 +91,38 @@ def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
     df = clean_suspicious_numeric_values(df)
     df = clean_invalid_coded_values(df)
     return df
+
+
+def cleaning_change_summary(before: pd.DataFrame, after: pd.DataFrame) -> pd.DataFrame:
+    """Summarise where cleaning changed values to missing."""
+    rows = []
+    shared_columns = before.columns.intersection(after.columns)
+
+    for column in shared_columns:
+        before_series = before[column]
+        after_series = after[column]
+        changed_to_missing = before_series.notna() & after_series.isna()
+
+        if changed_to_missing.any():
+            rows.append(
+                {
+                    "column": column,
+                    "changed_to_nan": int(changed_to_missing.sum()),
+                    "missing_before": int(before_series.isna().sum()),
+                    "missing_after": int(after_series.isna().sum()),
+                    "missing_pct_after": round(after_series.isna().mean() * 100, 2),
+                }
+            )
+
+    columns = [
+        "column",
+        "changed_to_nan",
+        "missing_before",
+        "missing_after",
+        "missing_pct_after",
+    ]
+
+    if not rows:
+        return pd.DataFrame(columns=columns)
+
+    return pd.DataFrame(rows, columns=columns).sort_values("changed_to_nan", ascending=False)
