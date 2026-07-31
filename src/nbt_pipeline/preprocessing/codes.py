@@ -57,6 +57,15 @@ def _normalise_code(value) -> str | None:
     return value_str.upper()
 
 
+def _normalise_text(value) -> str | None:
+    if pd.isna(value):
+        return None
+    value_str = str(value).strip()
+    if not value_str:
+        return None
+    return " ".join(value_str.upper().split())
+
+
 def add_code_labels(df: pd.DataFrame) -> pd.DataFrame:
     """Add readable labels for key coded columns."""
     df = df.copy()
@@ -75,7 +84,11 @@ def add_code_labels(df: pd.DataFrame) -> pd.DataFrame:
 
     if "actual_proc_1_procedure_code" in df:
         code = df["actual_proc_1_procedure_code"].astype("string").str.strip().str.upper()
-        df["procedure_code_chapter"] = code.str[0]
+        df["procedure_code_chapter"] = code.str.extract(r"^([A-Z])", expand=False)
+        df["procedure_code_group"] = code.str.extract(r"^([A-Z]\d)", expand=False)
+        df["procedure_code_format_valid"] = code.str.fullmatch(r"[A-Z]\d{3}")
+
+    df = add_procedure_description_quality_flags(df)
 
     return df
 
@@ -102,3 +115,96 @@ def coded_value_quality(df: pd.DataFrame) -> pd.DataFrame:
         )
 
     return pd.DataFrame(rows)
+
+
+def add_procedure_description_quality_flags(df: pd.DataFrame) -> pd.DataFrame:
+    """Flag procedure code-description mappings that are not one-to-one."""
+    df = df.copy()
+    code_column = "actual_proc_1_procedure_code"
+    description_column = "ProcedureDescription"
+
+    if code_column not in df or description_column not in df:
+        return df
+
+    code = df[code_column].map(_normalise_code)
+    description = df[description_column].map(_normalise_text)
+
+    mapped = pd.DataFrame(
+        {
+            "procedure_code": code,
+            "procedure_description": description,
+        }
+    ).dropna()
+
+    if mapped.empty:
+        df["procedure_code_description_count"] = pd.NA
+        df["procedure_description_code_count"] = pd.NA
+        df["procedure_code_has_multiple_descriptions"] = False
+        df["procedure_description_has_multiple_codes"] = False
+        df["procedure_mapping_needs_review"] = False
+        return df
+
+    descriptions_per_code = mapped.groupby("procedure_code")["procedure_description"].nunique()
+    codes_per_description = mapped.groupby("procedure_description")["procedure_code"].nunique()
+
+    df["procedure_code_description_count"] = code.map(descriptions_per_code)
+    df["procedure_description_code_count"] = description.map(codes_per_description)
+    df["procedure_code_has_multiple_descriptions"] = df["procedure_code_description_count"].fillna(0) > 1
+    df["procedure_description_has_multiple_codes"] = df["procedure_description_code_count"].fillna(0) > 1
+    df["procedure_mapping_needs_review"] = (
+        df["procedure_code_has_multiple_descriptions"]
+        | df["procedure_description_has_multiple_codes"]
+    )
+
+    return df
+
+
+def procedure_description_mapping_quality(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    """Summarise procedure code-description mapping quality in both directions."""
+    code_column = "actual_proc_1_procedure_code"
+    description_column = "ProcedureDescription"
+
+    if code_column not in df or description_column not in df:
+        empty = pd.DataFrame()
+        return {
+            "codes_with_multiple_descriptions": empty,
+            "descriptions_with_multiple_codes": empty,
+        }
+
+    mapped = pd.DataFrame(
+        {
+            "procedure_code": df[code_column].map(_normalise_code),
+            "procedure_description": df[description_column].map(_normalise_text),
+        }
+    ).dropna()
+
+    codes_with_multiple_descriptions = (
+        mapped
+        .groupby("procedure_code")
+        .agg(
+            unique_descriptions=("procedure_description", "nunique"),
+            row_count=("procedure_description", "size"),
+            descriptions=("procedure_description", lambda values: "; ".join(sorted(values.unique())[:5])),
+        )
+        .query("unique_descriptions > 1")
+        .sort_values(["unique_descriptions", "row_count"], ascending=False)
+        .reset_index()
+    )
+
+    descriptions_with_multiple_codes = (
+        mapped
+        .groupby("procedure_description")
+        .agg(
+            unique_codes=("procedure_code", "nunique"),
+            row_count=("procedure_code", "size"),
+            codes=("procedure_code", lambda values: ", ".join(sorted(values.unique())[:10])),
+        )
+        .query("unique_codes > 1")
+        .sort_values(["unique_codes", "row_count"], ascending=False)
+        .reset_index()
+    )
+
+    return {
+        "codes_with_multiple_descriptions": codes_with_multiple_descriptions,
+        "descriptions_with_multiple_codes": descriptions_with_multiple_codes,
+    }
