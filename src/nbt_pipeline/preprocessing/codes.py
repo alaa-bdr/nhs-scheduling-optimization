@@ -86,9 +86,6 @@ def add_code_labels(df: pd.DataFrame) -> pd.DataFrame:
         code = df["actual_proc_1_procedure_code"].astype("string").str.strip().str.upper()
         df["procedure_code_chapter"] = code.str.extract(r"^([A-Z])", expand=False)
         df["procedure_code_group"] = code.str.extract(r"^([A-Z]\d)", expand=False)
-        df["procedure_code_format_valid"] = code.str.fullmatch(r"[A-Z]\d{3}")
-
-    df = add_procedure_description_quality_flags(df)
 
     return df
 
