@@ -4,7 +4,7 @@ from nbt_pipeline.preprocessing.codes import add_code_labels
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.specialty import add_specialty_column
 from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
-from nbt_pipeline.preprocessing.time import validate_operation_length_rule
+from nbt_pipeline.preprocessing.time import add_theatre_flow_time_features
 
 
 def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -15,9 +15,7 @@ def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
         df["calculated_operation_length_mins"] = df["operation_length_mins"]
 
         try:
-            validated = validate_operation_length_rule(df)
-            df["operation_length_rule_valid"] = validated["operation_length_rule_valid"]
-            df["time_sequence_valid"] = validated["time_sequence_valid"]
+            df = add_theatre_flow_time_features(df)
         except KeyError:
             pass
 

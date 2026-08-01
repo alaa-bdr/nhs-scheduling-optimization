@@ -19,6 +19,7 @@ from nbt_pipeline.preprocessing.pipeline import build_preprocessed_dataset
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
 from nbt_pipeline.preprocessing.time import (
+    add_theatre_flow_time_features,
     time_column_format_summary,
     validate_operation_length_rule,
 )
@@ -27,6 +28,7 @@ __all__ = [
     "add_feature_columns",
     "add_procedure_description_quality_flags",
     "add_session_description_features",
+    "add_theatre_flow_time_features",
     "add_theatre_room_features",
     "blank_like_summary",
     "build_preprocessed_dataset",
