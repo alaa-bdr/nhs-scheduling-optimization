@@ -28,24 +28,6 @@ def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def add_theatre_note_flags(df: pd.DataFrame) -> pd.DataFrame:
-    """Add cheap rule-based flags from theatre_notes without using an LLM."""
-    df = df.copy()
-    if "theatre_notes" not in df:
-        return df
-
-    notes = df["theatre_notes"].astype("string").fillna("")
-    stripped = notes.str.strip()
-    df["has_theatre_note"] = stripped.ne("") & stripped.ne(".")
-    df["theatre_note_length"] = stripped.str.len()
-    df["theatre_note_has_question"] = stripped.str.contains(r"\?", regex=True, na=False)
-    df["theatre_note_has_plus_minus"] = stripped.str.contains(r"\+/-|±", regex=True, na=False)
-    df["theatre_note_mentions_histology"] = stripped.str.contains("histology|hist", case=False, regex=True, na=False)
-    df["theatre_note_mentions_biopsy"] = stripped.str.contains("biopsy", case=False, regex=True, na=False)
-    df["theatre_note_mentions_xray"] = stripped.str.contains(r"x-?ray|image intensifier", case=False, regex=True, na=False)
-    return df
-
-
 def add_feature_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Add reusable analysis/model features."""
     df = add_code_labels(df)
@@ -53,5 +35,4 @@ def add_feature_columns(df: pd.DataFrame) -> pd.DataFrame:
     df = add_session_description_features(df)
     df = add_specialty_column(df)
     df = add_duration_features(df)
-    df = add_theatre_note_flags(df)
     return df
