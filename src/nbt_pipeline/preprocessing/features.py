@@ -24,6 +24,23 @@ def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
         df["is_overrun"] = df["duration_error_mins"] > 0
         df["overrun_minutes"] = df["duration_error_mins"].clip(lower=0)
         df["underrun_minutes"] = (-df["duration_error_mins"]).clip(lower=0)
+        df["duration_tolerance_mins"] = df["ExpectedDurationMins"].mul(0.10).clip(lower=10)
+
+        valid_duration_comparison = (
+            df["duration_error_mins"].notna()
+            & df["duration_tolerance_mins"].notna()
+        )
+        df["meaningful_overrun_flag"] = (
+            df["duration_error_mins"] > df["duration_tolerance_mins"]
+        ).where(valid_duration_comparison, pd.NA).astype("boolean")
+        df["meaningful_underrun_flag"] = (
+            df["duration_error_mins"] < -df["duration_tolerance_mins"]
+        ).where(valid_duration_comparison, pd.NA).astype("boolean")
+
+        df["duration_status"] = pd.Series("missing_duration", index=df.index, dtype="string")
+        df.loc[valid_duration_comparison, "duration_status"] = "within_tolerance"
+        df.loc[df["meaningful_overrun_flag"].fillna(False), "duration_status"] = "meaningful_overrun"
+        df.loc[df["meaningful_underrun_flag"].fillna(False), "duration_status"] = "meaningful_underrun"
 
     return df
 
