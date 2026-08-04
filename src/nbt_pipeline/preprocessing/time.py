@@ -85,6 +85,32 @@ def _first_clock_time_with_minute_between(
     return float(candidate)
 
 
+def _nearest_clock_time_after(
+    minute_value: float,
+    anchor_minutes: float,
+    upper_minutes: float,
+) -> float:
+    """Return the matching minute in the anchor hour or following hour."""
+    candidate = _first_clock_time_with_minute_between(
+        minute_value, anchor_minutes, upper_minutes
+    )
+    if pd.isna(candidate) or candidate - anchor_minutes >= 60:
+        return np.nan
+    return candidate
+
+
+def _nearest_clock_time_before(
+    minute_value: float,
+    anchor_minutes: float,
+    lower_minutes: float,
+) -> float:
+    """Return the matching minute in the anchor hour or preceding hour."""
+    candidate = _latest_clock_time_with_minute(minute_value, anchor_minutes)
+    if pd.isna(candidate) or candidate < lower_minutes or anchor_minutes - candidate >= 60:
+        return np.nan
+    return candidate
+
+
 def time_column_format_summary(df: pd.DataFrame) -> pd.DataFrame:
     """Summarise missingness and clock-like formatting for theatre time columns."""
     rows = []
@@ -113,13 +139,24 @@ def time_column_format_summary(df: pd.DataFrame) -> pd.DataFrame:
 
 def validate_operation_length_rule(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Reconstruct likely operation start/end clock times and test the recorded duration.
+    Apply the provisional ordered theatre-time reconstruction.
 
     The dataset appears to store most theatre event columns as minute-of-hour values,
     while `out_of_theatre` is usually a full clock time. This helper uses
-    `out_of_theatre` as the anchor, then checks whether:
+    `out_of_theatre` as the anchor. It applies three working assumptions that
+    require confirmation from NBT:
 
     operation_length_mins = operation_end_time - into_theatre
+
+    - operation end is the nearest matching minute before out of theatre;
+    - incision is the nearest matching minute after entering theatre;
+    - closure is the nearest matching minute before operation end.
+
+    Each nearest-minute interval must be shorter than 60 minutes. The complete
+    inferred order must be:
+
+    into theatre <= anaesthetic start <= incision <= closure
+    <= operation end <= out of theatre
     """
     required = {"into_theatre", "operation_end_time", "out_of_theatre", "operation_length_mins"}
     missing = required - set(df.columns)
@@ -149,21 +186,78 @@ def validate_operation_length_rule(df: pd.DataFrame) -> pd.DataFrame:
     result["operation_end_time_inferred"] = operation_end_clock.map(_format_clock)
     result["operation_length_rule_valid"] = duration_is_compatible
 
-    for column in ["anaesthetic_start_time", "incision", "closure"]:
-        minute_values = result[column].map(_minute_part)
-        result[f"{column}_inferred"] = [
-            _format_clock(
-                _first_clock_time_with_minute_between(minute, lower, upper)
+    anaesthetic_clock = pd.Series(
+        [
+            _nearest_clock_time_after(minute, lower, upper)
+            for minute, lower, upper in zip(
+                result["anaesthetic_start_time"].map(_minute_part),
+                into_clock,
+                operation_end_clock,
             )
-            for minute, lower, upper in zip(minute_values, into_clock, operation_end_clock)
-        ]
+        ],
+        index=result.index,
+    )
+    incision_clock = pd.Series(
+        [
+            _nearest_clock_time_after(minute, lower, upper)
+            for minute, lower, upper in zip(
+                result["incision"].map(_minute_part),
+                into_clock,
+                operation_end_clock,
+            )
+        ],
+        index=result.index,
+    )
+    closure_clock = pd.Series(
+        [
+            _nearest_clock_time_before(minute, upper, lower)
+            for minute, lower, upper in zip(
+                result["closure"].map(_minute_part),
+                into_clock,
+                operation_end_clock,
+            )
+        ],
+        index=result.index,
+    )
+
+    result["anaesthetic_start_time_inferred"] = anaesthetic_clock.map(_format_clock)
+    result["incision_inferred"] = incision_clock.map(_format_clock)
+    result["closure_inferred"] = closure_clock.map(_format_clock)
 
     result["time_sequence_valid"] = (
         result["operation_length_rule_valid"]
-        & result["anaesthetic_start_time_inferred"].notna()
-        & result["incision_inferred"].notna()
-        & result["closure_inferred"].notna()
+        & anaesthetic_clock.notna()
+        & incision_clock.notna()
+        & closure_clock.notna()
+        & (into_clock <= anaesthetic_clock)
+        & (anaesthetic_clock <= incision_clock)
+        & (incision_clock <= closure_clock)
+        & (closure_clock <= operation_end_clock)
+        & (operation_end_clock <= out_clock)
     )
+
+    source_complete = result[
+        [
+            "into_theatre",
+            "anaesthetic_start_time",
+            "incision",
+            "closure",
+            "operation_end_time",
+            "out_of_theatre",
+            "operation_length_mins",
+        ]
+    ].notna().all(axis=1)
+    result["time_reconstruction_status"] = pd.Series(
+        "provisional_rule_failed", index=result.index, dtype="string"
+    )
+    result.loc[~source_complete, "time_reconstruction_status"] = "missing_source_value"
+    result.loc[
+        source_complete & ~result["operation_length_rule_valid"],
+        "time_reconstruction_status",
+    ] = "invalid_operation_window"
+    result.loc[
+        result["time_sequence_valid"], "time_reconstruction_status"
+    ] = "valid_provisional_sequence"
 
     return result
 
@@ -178,11 +272,12 @@ def _hour_band(hour_value: float) -> str | pd.NA:
 
 def add_theatre_flow_time_features(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Add time-of-day and theatre-flow features from the validated timeline.
+    Add time-of-day and theatre-flow features from the provisional timeline.
 
     These features are based on the inferred clock timeline used by
-    `validate_operation_length_rule`. They are intended for EDA and modelling
-    preparation, while the raw time columns remain unchanged.
+    `validate_operation_length_rule`. They are intended for assumption-sensitive
+    EDA only until NBT confirms the local timestamp meanings and nearest-hour
+    rules. The raw time columns remain unchanged.
     """
     result = validate_operation_length_rule(df)
 
@@ -199,39 +294,16 @@ def add_theatre_flow_time_features(df: pd.DataFrame) -> pd.DataFrame:
     )
     into_clock = operation_end_clock - result["operation_length_mins"]
 
-    anaesthetic_clock = pd.Series(
-        [
-            _first_clock_time_with_minute_between(minute, lower, upper)
-            for minute, lower, upper in zip(
-                result["anaesthetic_start_time"].map(_minute_part),
-                into_clock,
-                operation_end_clock,
-            )
-        ],
-        index=result.index,
-    )
-    incision_clock = pd.Series(
-        [
-            _first_clock_time_with_minute_between(minute, lower, upper)
-            for minute, lower, upper in zip(
-                result["incision"].map(_minute_part),
-                into_clock,
-                operation_end_clock,
-            )
-        ],
-        index=result.index,
-    )
-    closure_clock = pd.Series(
-        [
-            _first_clock_time_with_minute_between(minute, lower, upper)
-            for minute, lower, upper in zip(
-                result["closure"].map(_minute_part),
-                into_clock,
-                operation_end_clock,
-            )
-        ],
-        index=result.index,
-    )
+    anaesthetic_clock = result["anaesthetic_start_time_inferred"].map(_clock_minutes)
+    incision_clock = result["incision_inferred"].map(_clock_minutes)
+    closure_clock = result["closure_inferred"].map(_clock_minutes)
+
+    # Restore day offsets lost when inferred clocks were formatted as HH:MM.
+    for clock in [anaesthetic_clock, incision_clock]:
+        clock += np.floor(into_clock / (24 * 60)) * (24 * 60)
+        clock += (clock < into_clock) * (24 * 60)
+    closure_clock += np.floor(operation_end_clock / (24 * 60)) * (24 * 60)
+    closure_clock -= (closure_clock > operation_end_clock) * (24 * 60)
 
     valid_duration = result["operation_length_rule_valid"].fillna(False)
     valid_sequence = result["time_sequence_valid"].fillna(False)
