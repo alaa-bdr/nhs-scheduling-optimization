@@ -1,6 +1,7 @@
 import pandas as pd
 
 from nbt_pipeline.preprocessing.codes import add_code_labels
+from nbt_pipeline.preprocessing.outliers import add_duration_timing_review_flag
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.specialty import add_specialty_column
 from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
@@ -52,4 +53,11 @@ def add_feature_columns(df: pd.DataFrame) -> pd.DataFrame:
     df = add_session_description_features(df)
     df = add_specialty_column(df)
     df = add_duration_features(df)
+    if {
+        "ExpectedDurationMins",
+        "operation_length_mins",
+        "operation_length_rule_valid",
+        "time_sequence_valid",
+    }.issubset(df.columns):
+        df = add_duration_timing_review_flag(df)
     return df

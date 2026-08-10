@@ -85,6 +85,7 @@ def add_code_labels(df: pd.DataFrame) -> pd.DataFrame:
     if "actual_proc_1_procedure_code" in df:
         code = df["actual_proc_1_procedure_code"].astype("string").str.strip().str.upper()
         df["procedure_code_chapter"] = code.str.extract(r"^([A-Z])", expand=False)
+        df["procedure_code_category"] = code.str.extract(r"^([A-Z]\d{2})", expand=False)
         df["procedure_code_group"] = code.str.extract(r"^([A-Z]\d)", expand=False)
 
     return df

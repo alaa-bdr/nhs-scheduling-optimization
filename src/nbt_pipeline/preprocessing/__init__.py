@@ -15,6 +15,7 @@ from nbt_pipeline.preprocessing.codes import (
 )
 from nbt_pipeline.preprocessing.features import add_feature_columns
 from nbt_pipeline.preprocessing.load import load_nbt_smallset
+from nbt_pipeline.preprocessing.outliers import add_duration_timing_review_flag
 from nbt_pipeline.preprocessing.pipeline import build_preprocessed_dataset
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
@@ -26,6 +27,7 @@ from nbt_pipeline.preprocessing.time import (
 
 __all__ = [
     "add_feature_columns",
+    "add_duration_timing_review_flag",
     "add_procedure_description_quality_flags",
     "add_session_description_features",
     "add_theatre_flow_time_features",
