@@ -85,11 +85,28 @@ def clean_invalid_coded_values(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def clean_invalid_procedure_codes(df: pd.DataFrame) -> pd.DataFrame:
+    """Standardise valid OPCS-like procedure codes and remove invalid formats."""
+    df = df.copy()
+    column = "actual_proc_1_procedure_code"
+
+    if column not in df:
+        return df
+
+    codes = df[column].astype("string").str.strip().str.upper()
+    valid_format = codes.str.fullmatch(r"[A-Z]\d{3}")
+
+    df[column] = codes
+    df.loc[codes.notna() & ~valid_format.fillna(False), column] = pd.NA
+    return df
+
+
 def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
     """Apply deterministic cleaning steps that are safe for the raw dataset."""
     df = clean_blank_text(df)
     df = clean_suspicious_numeric_values(df)
     df = clean_invalid_coded_values(df)
+    df = clean_invalid_procedure_codes(df)
     return df
 
 

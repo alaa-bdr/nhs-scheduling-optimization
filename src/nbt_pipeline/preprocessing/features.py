@@ -1,10 +1,11 @@
 import pandas as pd
 
 from nbt_pipeline.preprocessing.codes import add_code_labels
+from nbt_pipeline.preprocessing.outliers import add_duration_timing_review_flag
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.specialty import add_specialty_column
 from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
-from nbt_pipeline.preprocessing.time import validate_operation_length_rule
+from nbt_pipeline.preprocessing.time import add_theatre_flow_time_features
 
 
 def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -15,9 +16,7 @@ def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
         df["calculated_operation_length_mins"] = df["operation_length_mins"]
 
         try:
-            validated = validate_operation_length_rule(df)
-            df["operation_length_rule_valid"] = validated["operation_length_rule_valid"]
-            df["time_sequence_valid"] = validated["time_sequence_valid"]
+            df = add_theatre_flow_time_features(df)
         except KeyError:
             pass
 
@@ -25,25 +24,25 @@ def add_duration_features(df: pd.DataFrame) -> pd.DataFrame:
         df["duration_error_mins"] = df["calculated_operation_length_mins"] - df["ExpectedDurationMins"]
         df["is_overrun"] = df["duration_error_mins"] > 0
         df["overrun_minutes"] = df["duration_error_mins"].clip(lower=0)
+        df["underrun_minutes"] = (-df["duration_error_mins"]).clip(lower=0)
+        df["duration_tolerance_mins"] = df["ExpectedDurationMins"].mul(0.10).clip(lower=10)
 
-    return df
+        valid_duration_comparison = (
+            df["duration_error_mins"].notna()
+            & df["duration_tolerance_mins"].notna()
+        )
+        df["meaningful_overrun_flag"] = (
+            df["duration_error_mins"] > df["duration_tolerance_mins"]
+        ).where(valid_duration_comparison, pd.NA).astype("boolean")
+        df["meaningful_underrun_flag"] = (
+            df["duration_error_mins"] < -df["duration_tolerance_mins"]
+        ).where(valid_duration_comparison, pd.NA).astype("boolean")
 
+        df["duration_status"] = pd.Series("missing_duration", index=df.index, dtype="string")
+        df.loc[valid_duration_comparison, "duration_status"] = "within_tolerance"
+        df.loc[df["meaningful_overrun_flag"].fillna(False), "duration_status"] = "meaningful_overrun"
+        df.loc[df["meaningful_underrun_flag"].fillna(False), "duration_status"] = "meaningful_underrun"
 
-def add_theatre_note_flags(df: pd.DataFrame) -> pd.DataFrame:
-    """Add cheap rule-based flags from theatre_notes without using an LLM."""
-    df = df.copy()
-    if "theatre_notes" not in df:
-        return df
-
-    notes = df["theatre_notes"].astype("string").fillna("")
-    stripped = notes.str.strip()
-    df["has_theatre_note"] = stripped.ne("") & stripped.ne(".")
-    df["theatre_note_length"] = stripped.str.len()
-    df["theatre_note_has_question"] = stripped.str.contains(r"\?", regex=True, na=False)
-    df["theatre_note_has_plus_minus"] = stripped.str.contains(r"\+/-|±", regex=True, na=False)
-    df["theatre_note_mentions_histology"] = stripped.str.contains("histology|hist", case=False, regex=True, na=False)
-    df["theatre_note_mentions_biopsy"] = stripped.str.contains("biopsy", case=False, regex=True, na=False)
-    df["theatre_note_mentions_xray"] = stripped.str.contains(r"x-?ray|image intensifier", case=False, regex=True, na=False)
     return df
 
 
@@ -54,5 +53,11 @@ def add_feature_columns(df: pd.DataFrame) -> pd.DataFrame:
     df = add_session_description_features(df)
     df = add_specialty_column(df)
     df = add_duration_features(df)
-    df = add_theatre_note_flags(df)
+    if {
+        "ExpectedDurationMins",
+        "operation_length_mins",
+        "operation_length_rule_valid",
+        "time_sequence_valid",
+    }.issubset(df.columns):
+        df = add_duration_timing_review_flag(df)
     return df
