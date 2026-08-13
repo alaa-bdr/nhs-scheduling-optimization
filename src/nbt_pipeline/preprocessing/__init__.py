@@ -16,7 +16,12 @@ from nbt_pipeline.preprocessing.codes import (
 from nbt_pipeline.preprocessing.features import add_feature_columns
 from nbt_pipeline.preprocessing.load import load_nbt_smallset
 from nbt_pipeline.preprocessing.outliers import add_duration_timing_review_flag
-from nbt_pipeline.preprocessing.pipeline import build_preprocessed_dataset
+from nbt_pipeline.preprocessing.pipeline import build_analysis_dataset, build_preprocessed_dataset
+from nbt_pipeline.preprocessing.selection import (
+    ANALYSIS_DROP_COLUMNS,
+    drop_analysis_columns,
+    dropped_column_summary,
+)
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
 from nbt_pipeline.preprocessing.time import (
@@ -33,6 +38,7 @@ __all__ = [
     "add_theatre_flow_time_features",
     "add_theatre_room_features",
     "blank_like_summary",
+    "build_analysis_dataset",
     "build_preprocessed_dataset",
     "cleaning_change_summary",
     "clean_dataset",
@@ -44,6 +50,9 @@ __all__ = [
     "load_nbt_smallset",
     "missing_summary",
     "procedure_description_mapping_quality",
+    "ANALYSIS_DROP_COLUMNS",
+    "drop_analysis_columns",
+    "dropped_column_summary",
     "time_column_format_summary",
     "validate_operation_length_rule",
 ]
