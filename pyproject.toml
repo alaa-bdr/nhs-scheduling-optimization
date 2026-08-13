@@ -4,8 +4,16 @@ version = "0.1.0"
 description = "NBT theatre scheduling preprocessing and analysis pipeline"
 requires-python = ">=3.10,<3.14"
 dependencies = [
+    "ipykernel",
+    "matplotlib",
+    "nbclient",
+    "nbformat",
+    "numpy",
     "pandas",
     "openpyxl",
+    "scipy",
+    "seaborn",
+    "statsmodels",
 ]
 
 [build-system]

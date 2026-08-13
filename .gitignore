@@ -1,5 +1,7 @@
 .venv/
 .venv-1/
+.venv-stats/
+.uv-cache/
 .crewai_storage/
 __pycache__/
 *.pyc
