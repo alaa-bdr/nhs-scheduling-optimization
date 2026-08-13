@@ -429,6 +429,134 @@ The coefficient for `log1p(ExpectedDurationMins)` must be interpreted especially
 The model reduces measured confounding compared with separate charts, but it remains associational. HC3 robust confidence intervals address variance misspecification, not correlation among repeated cases within organisational units. Residual confounding, coding quality, sparse levels, the unvalidated consultant labels and the provisional overrun definition remain limitations. Room coefficients are not performance scores; a validated hierarchy would require multilevel or clustered modelling and external validation.
 """),
     md("""
+### 8.1 Theatre-room by procedure-group interaction screening
+
+An interaction asks whether the association between procedure group and meaningful overrun changes across theatre rooms. The descriptive room-by-procedure heatmaps are already presented in the EDA notebook (Section 10.8.1.1). This section adds a formal, deliberately restricted screening analysis.
+
+A full interaction containing every room and procedure group is not estimable reliably: the allocation table contains 45 rooms and 145 procedure groups, but most combinations are structural zeros. A procedure group is therefore screened only when it has at least 30 classified cases in each of at least three rooms. Within each eligible procedure group, a chi-square test compares meaningful-overrun prevalence across rooms. Bias-corrected Cramer's V describes the magnitude of the within-procedure room association, and Benjamini-Hochberg correction controls the false-discovery rate across screened procedure groups.
+"""),
+    code("""
+from scipy import stats
+
+interaction_source = analysis_df[
+    analysis_df["meaningful_overrun_flag"].notna()
+    & analysis_df["TheatreRoom"].notna()
+    & analysis_df["procedure_code_group"].notna()
+].copy()
+
+interaction_rows = []
+interaction_rate_rows = []
+for procedure_group, group in interaction_source.groupby("procedure_code_group"):
+    room_counts = group["TheatreRoom"].value_counts()
+    eligible_rooms = room_counts[room_counts >= 30].index
+    screened = group[group["TheatreRoom"].isin(eligible_rooms)].copy()
+    table = pd.crosstab(screened["TheatreRoom"], screened["meaningful_overrun_flag"])
+    if table.shape[0] < 3 or table.shape[1] < 2:
+        continue
+
+    chi_square, p_value, degrees_of_freedom, expected = stats.chi2_contingency(table)
+    n = int(table.to_numpy().sum())
+    rows, columns = table.shape
+    phi_squared = chi_square / n
+    phi_corrected = max(
+        0.0,
+        phi_squared - ((columns - 1) * (rows - 1)) / (n - 1),
+    )
+    rows_corrected = rows - ((rows - 1) ** 2) / (n - 1)
+    columns_corrected = columns - ((columns - 1) ** 2) / (n - 1)
+    denominator = min(rows_corrected - 1, columns_corrected - 1)
+    cramers_v = np.sqrt(phi_corrected / denominator) if denominator > 0 else np.nan
+
+    rates = screened.groupby("TheatreRoom")["meaningful_overrun_flag"].agg(
+        cases="size", overrun_rate="mean"
+    ).reset_index()
+    rates["procedure_code_group"] = procedure_group
+    interaction_rate_rows.append(rates)
+    interaction_rows.append({
+        "procedure_code_group": procedure_group,
+        "eligible_rooms": len(eligible_rooms),
+        "n": n,
+        "chi_square": chi_square,
+        "degrees_of_freedom": degrees_of_freedom,
+        "p_value": p_value,
+        "cramers_v_corrected": cramers_v,
+        "minimum_expected_count": expected.min(),
+        "minimum_room_overrun_rate": rates["overrun_rate"].min(),
+        "maximum_room_overrun_rate": rates["overrun_rate"].max(),
+        "lowest_rate_room": rates.loc[rates["overrun_rate"].idxmin(), "TheatreRoom"],
+        "highest_rate_room": rates.loc[rates["overrun_rate"].idxmax(), "TheatreRoom"],
+    })
+
+room_procedure_interaction = pd.DataFrame(interaction_rows)
+interaction_rates = pd.concat(interaction_rate_rows, ignore_index=True)
+room_procedure_interaction["p_fdr_bh"] = multipletests(
+    room_procedure_interaction["p_value"], method="fdr_bh"
+)[1]
+room_procedure_interaction["reject_fdr_0_05"] = (
+    room_procedure_interaction["p_fdr_bh"] < ALPHA
+)
+room_procedure_interaction.sort_values(
+    "cramers_v_corrected", ascending=False
+).round(4)
+"""),
+    code("""
+eligible_groups = room_procedure_interaction.sort_values(
+    "cramers_v_corrected", ascending=False
+)["procedure_code_group"]
+eligible_combinations = interaction_rates[
+    interaction_rates["procedure_code_group"].isin(eligible_groups)
+].copy()
+room_order = (
+    eligible_combinations.groupby("TheatreRoom")["cases"]
+    .sum().sort_values(ascending=False).index
+)
+
+rate_matrix = eligible_combinations.pivot(
+    index="TheatreRoom", columns="procedure_code_group", values="overrun_rate"
+).reindex(index=room_order, columns=eligible_groups) * 100
+count_matrix = eligible_combinations.pivot(
+    index="TheatreRoom", columns="procedure_code_group", values="cases"
+).reindex(index=room_order, columns=eligible_groups)
+annotations = rate_matrix.copy().astype(object)
+for room in rate_matrix.index:
+    for procedure in rate_matrix.columns:
+        rate = rate_matrix.loc[room, procedure]
+        count = count_matrix.loc[room, procedure]
+        annotations.loc[room, procedure] = (
+            f"{rate:.0f}%\\n(n={count:.0f})" if pd.notna(rate) else ""
+        )
+
+fig, axes = plt.subplots(1, 2, figsize=(17, 8), gridspec_kw={"width_ratios": [2.2, 1]})
+sns.heatmap(
+    rate_matrix, annot=annotations, fmt="", cmap="OrRd", vmin=0, vmax=100,
+    linewidths=.4, cbar_kws={"label": "Meaningful-overrun rate (%)"}, ax=axes[0]
+)
+axes[0].set(
+    title="Meaningful-overrun rate within repeated room-procedure combinations",
+    xlabel="Procedure-code group", ylabel="Theatre room"
+)
+
+effect_plot = room_procedure_interaction.sort_values("cramers_v_corrected")
+sns.barplot(
+    data=effect_plot, x="cramers_v_corrected", y="procedure_code_group",
+    hue="reject_fdr_0_05", palette={True: "#C44E52", False: "#9A9A9A"},
+    dodge=False, ax=axes[1]
+)
+axes[1].set(
+    title="Within-procedure room association strength",
+    xlabel="Bias-corrected Cramer's V", ylabel="Procedure-code group"
+)
+axes[1].legend(title="FDR significant")
+plt.tight_layout()
+"""),
+    md("""
+**Interpretation.** Only nine broad procedure groups met the repetition rule, confirming that procedure allocation is highly specialised by room. Five groups showed evidence of room heterogeneity after false-discovery-rate correction, but not all signals were equally reliable or large.
+
+`V2` had the strongest within-procedure room association (Cramer's V = 0.619; 175 cases across four rooms), with observed overrun rates ranging from 7.9% in BRUNEL TH 19 to 83.3% in BRUNEL TH 06. `S5` showed a moderate association (V = 0.285; 324 cases across five rooms), ranging from 34.7% in PLASTIC MINOR 3 to 91.2% in BRUNEL TH 03. `M1` showed a smaller association (V = 0.190; 300 cases across three IR rooms), with rates from 7.1% in IR LAB 2 to 22.2% in IR LAB 1. `L7` was weaker and borderline after correction (V = 0.133; adjusted `p = 0.046`). Although `S0` was statistically significant, its minimum expected cell count was below five, so its chi-square result is not considered dependable without category consolidation or an exact/Monte Carlo analysis. `W2`, despite high rates across its rooms, did not show clear evidence that those rates differed by room after correction.
+
+This screening improves on overall room comparisons because it compares rooms within the same broad procedure group. It still does not identify a causal room effect: broad groups contain different specific procedures, and patient complexity, urgency, anaesthetic practice, specialty, staffing and booking calibration may differ within each cell. The result is a shortlist for validation and a future hierarchical model, not a room-performance ranking. The unrestricted room-by-procedure interaction is deliberately not fitted because structural zeros and sparse cells would produce unstable or non-identifiable coefficients.
+"""),
+    md("""
 ## 9. Conclusions and decision rules
 
 The statistical analysis should support conclusions only when four conditions align: an interpretable effect direction, a meaningful effect size, adequate precision, and acceptable data quality. Statistical significance by itself is insufficient.
