@@ -12,6 +12,10 @@ ANALYSIS_DROP_COLUMNS = (
     "actual_proc_1_procedure_code",
     "ProcedureDescription",
     "procedure_code_chapter",
+    # Raw coded values replaced by their readable label columns.
+    "admission_type",
+    "intended_management",
+    "PriorityLevelCode",
     # Staff identifiers and unvalidated consultant text.
     "listing_cons_code",
     "theat_surg_1_national_code",
@@ -22,7 +26,8 @@ ANALYSIS_DROP_COLUMNS = (
     "session_code_prefix",
     "session_list_type",
     "session_time_band",
-    # Redundant theatre representations. Keep theatre_area and TheatreRoom.
+    # Redundant theatre representations. Keep only the specific TheatreRoom.
+    "theatre_area",
     "theatre_room_prefix",
     "theatre_room_number",
     "theatre_is_ir",
@@ -51,6 +56,9 @@ ANALYSIS_DROP_COLUMNS = (
     "operation_length_rule_valid",
     "time_sequence_valid",
     "time_reconstruction_status",
+    # Exact or less informative outcome duplicates retained through better fields.
+    "calculated_operation_length_mins",
+    "is_overrun",
 )
 
 
@@ -58,6 +66,11 @@ def drop_analysis_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Return the cleaned analysis view after documented column exclusions."""
     present_columns = [column for column in ANALYSIS_DROP_COLUMNS if column in df.columns]
     return df.drop(columns=present_columns).copy()
+
+
+def remove_exact_source_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    """Remove exact records before analytical columns are discarded."""
+    return df.drop_duplicates().reset_index(drop=True)
 
 
 def dropped_column_summary(df: pd.DataFrame) -> pd.DataFrame:

@@ -21,6 +21,7 @@ from nbt_pipeline.preprocessing.selection import (
     ANALYSIS_DROP_COLUMNS,
     drop_analysis_columns,
     dropped_column_summary,
+    remove_exact_source_duplicates,
 )
 from nbt_pipeline.preprocessing.session import add_session_description_features
 from nbt_pipeline.preprocessing.theatre import add_theatre_room_features
@@ -53,6 +54,7 @@ __all__ = [
     "ANALYSIS_DROP_COLUMNS",
     "drop_analysis_columns",
     "dropped_column_summary",
+    "remove_exact_source_duplicates",
     "time_column_format_summary",
     "validate_operation_length_rule",
 ]

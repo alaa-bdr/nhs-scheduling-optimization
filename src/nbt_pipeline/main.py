@@ -5,7 +5,7 @@ from nbt_pipeline.preprocessing import build_analysis_dataset
 
 def main() -> None:
     df = build_analysis_dataset()
-    output_path = save_dataframe(df, PROCESSED_DATA_DIR / "nbt_smallset_analysis.xlsx")
+    output_path = save_dataframe(df, PROCESSED_DATA_DIR / "nbt_smallset_analysis_room_only.xlsx")
     print(f"Saved cleaned analysis dataset to: {output_path}")
 
 
