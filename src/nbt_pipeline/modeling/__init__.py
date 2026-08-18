@@ -7,6 +7,21 @@ from nbt_pipeline.modeling.regression import (
     make_predictor_sets,
     predictor_row_groups,
 )
+from nbt_pipeline.modeling.experiments import (
+    APPROVED_PREDICTORS,
+    CLASSIFICATION_TARGET,
+    REVIEW_FLAG_COLUMN,
+    START_HOUR_COLUMN,
+    TargetData,
+    aggregate_tree_importance,
+    build_supervised_pipeline,
+    classification_models,
+    classification_parameter_grids,
+    feature_configurations,
+    prepare_target_data,
+    regression_models,
+    regression_parameter_grids,
+)
 
 __all__ = [
     "OUTCOME_OR_LEAKAGE_COLUMNS",
@@ -16,4 +31,17 @@ __all__ = [
     "get_regression_models",
     "make_predictor_sets",
     "predictor_row_groups",
+    "APPROVED_PREDICTORS",
+    "CLASSIFICATION_TARGET",
+    "REVIEW_FLAG_COLUMN",
+    "START_HOUR_COLUMN",
+    "TargetData",
+    "aggregate_tree_importance",
+    "build_supervised_pipeline",
+    "classification_models",
+    "classification_parameter_grids",
+    "feature_configurations",
+    "prepare_target_data",
+    "regression_models",
+    "regression_parameter_grids",
 ]

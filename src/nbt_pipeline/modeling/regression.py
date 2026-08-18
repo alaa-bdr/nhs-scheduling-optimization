@@ -66,7 +66,13 @@ def make_predictor_sets(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, p
 def predictor_row_groups(predictors: pd.DataFrame) -> pd.Series:
     """Hash predictor rows so identical cases remain in the same data split."""
     normalized = predictors.astype("string").fillna("<MISSING>")
-    return pd.util.hash_pandas_object(normalized, index=False).astype("uint64")
+    rows = pd.Series(
+        list(normalized.itertuples(index=False, name=None)),
+        index=predictors.index,
+        dtype="object",
+    )
+    codes, _ = pd.factorize(rows, sort=False)
+    return pd.Series(codes, index=predictors.index, dtype="int64")
 
 
 def build_preprocessor() -> ColumnTransformer:
