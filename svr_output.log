@@ -1,0 +1,55 @@
+nohup: ignoring input
+Grid search on full training set (10385 rows)...
+Combinations: 8 x 5 folds = 40 fits
+Fitting 5 folds for each of 8 candidates, totalling 40 fits
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=scale; total time=  33.4s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=scale; total time=  32.5s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=scale; total time=  30.4s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=0.01; total time=  33.4s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=0.01; total time=  32.2s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=scale; total time=  26.8s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=scale; total time=  27.5s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=scale; total time=  26.0s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=0.01; total time=  28.7s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=0.01; total time=  27.8s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=scale; total time=  35.8s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=scale; total time=  35.8s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=scale; total time=  35.1s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=0.01; total time=  32.8s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=0.01; total time=  32.1s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=scale; total time=  29.3s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=scale; total time=  33.3s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=scale; total time=  29.1s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=0.01; total time=  30.7s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=0.01; total time=  25.9s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=scale; total time=  36.2s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=scale; total time=  31.3s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=0.01; total time=  33.0s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=0.01; total time=  32.2s
+[CV] END model__C=10.0, model__epsilon=1.0, model__gamma=0.01; total time=  32.9s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=scale; total time=  29.7s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=scale; total time=  25.5s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=0.01; total time=  26.5s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=0.01; total time=  27.1s
+[CV] END model__C=10.0, model__epsilon=5.0, model__gamma=0.01; total time=  26.1s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=scale; total time=  37.0s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=scale; total time=  34.0s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=0.01; total time=  32.1s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=0.01; total time=  34.8s
+[CV] END model__C=100.0, model__epsilon=1.0, model__gamma=0.01; total time=  33.0s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=scale; total time=  31.5s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=scale; total time=  31.8s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=0.01; total time=  27.5s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=0.01; total time=  29.3s
+[CV] END model__C=100.0, model__epsilon=5.0, model__gamma=0.01; total time=  26.4s
+
+Best parameters: {'model__C': 100.0, 'model__epsilon': 5.0, 'model__gamma': 'scale'}
+Best CV MAE: 29.8 mins
+
+Validation results:
+  MAE  = 27.0 mins
+  RMSE = 49.4 mins
+  R2   = 0.714
+
+Hospital planned time MAE: 40.0 mins
+SVR improvement: 13.0 mins better
