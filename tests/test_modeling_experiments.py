@@ -3,12 +3,16 @@ import pandas as pd
 
 from nbt_pipeline.modeling import (
     APPROVED_PREDICTORS,
+    REQUIRED_NON_IMPUTED_PREDICTORS,
     aggregate_tree_importance,
     build_supervised_pipeline,
     classification_models,
     feature_configurations,
+    final_model_spec,
     prepare_target_data,
     regression_models,
+    save_final_model_artifact,
+    train_final_model,
 )
 
 
@@ -16,8 +20,15 @@ def sample_analysis_data() -> pd.DataFrame:
     return pd.DataFrame(
         {
             "ExpectedDurationMins": [60, 90, 45],
+            "sex_national_code": ["1", "2", "1"],
             "age_at_operation": [40, np.nan, 70],
+            "ASAScore": ["2", "3", "1"],
+            "anaesthetic_desc": ["GA", "LA", "Sedation"],
+            "admission_type_label": ["Day case", "Inpatient", "Day case"],
+            "intended_management_label": ["Elective", "Emergency", "Elective"],
             "priority_level_label": ["P2", None, "P4"],
+            "procedure_code_group": ["A", "B", "A"],
+            "procedure_code_category": ["A01", "B01", "A02"],
             "TheatreRoom": ["A", "B", "C"],
             "operation_start_hour": [8, 10, np.nan],
             "operation_length_mins": [75, 80, np.nan],
@@ -33,6 +44,7 @@ def test_prepare_target_data_excludes_missing_target_and_all_leakage() -> None:
 
     assert prepared.target.tolist() == [1, 0]
     assert prepared.excluded_target_rows == 1
+    assert prepared.excluded_required_predictor_rows == 0
     assert "operation_length_mins" not in prepared.predictors
     assert "duration_error_mins" not in prepared.predictors
     assert "meaningful_overrun_flag" not in prepared.predictors
@@ -47,6 +59,22 @@ def test_feature_configurations_use_only_approved_fields_and_no_theatre_area() -
     assert "TheatreRoom" not in configurations["Full without location"]
     assert all("theatre_area" not in columns for columns in configurations.values())
     assert all(set(columns).issubset(APPROVED_PREDICTORS) for columns in configurations.values())
+    assert REQUIRED_NON_IMPUTED_PREDICTORS == ("ExpectedDurationMins",)
+
+
+def test_prepare_target_data_excludes_missing_required_expected_duration() -> None:
+    source = sample_analysis_data()
+    extra = source.iloc[[0]].copy()
+    extra["ExpectedDurationMins"] = np.nan
+    extra["meaningful_overrun_flag"] = 1
+    source = pd.concat([source, extra], ignore_index=True)
+
+    prepared = prepare_target_data(source, "meaningful_overrun_flag")
+
+    assert prepared.target.tolist() == [1, 0]
+    assert prepared.excluded_target_rows == 1
+    assert prepared.excluded_required_predictor_rows == 1
+    assert prepared.predictors["ExpectedDurationMins"].notna().all()
 
 
 def test_missing_aware_pipeline_fits_without_replacing_source_dataframe() -> None:
@@ -93,3 +121,36 @@ def test_tree_importance_is_aggregated_to_original_columns() -> None:
 
     assert set(result["feature"]).issubset({"numeric", "category"})
     assert np.isclose(result["importance"].sum(), 1.0)
+
+
+def test_final_model_spec_uses_primary_winning_columns_without_start_hour() -> None:
+    spec = final_model_spec("meaningful_overrun_flag")
+
+    assert spec.model_name == "XGBoost"
+    assert spec.feature_configuration == "Both procedure levels"
+    assert spec.threshold == 0.54
+    assert "ExpectedDurationMins" in spec.columns
+    assert "operation_start_hour" not in spec.columns
+    assert "TheatreRoom" not in spec.columns
+
+
+def test_save_final_model_artifact_writes_pipeline_and_metadata(tmp_path) -> None:
+    frame = sample_analysis_data().iloc[:2].copy()
+
+    metadata = save_final_model_artifact(frame, "duration_error_mins", tmp_path)
+
+    assert metadata["training_rows"] == 2
+    assert metadata["columns"] == list(final_model_spec("duration_error_mins").columns)
+    assert (tmp_path / "duration_error_mins" / "final_pipeline.joblib").exists()
+    assert (tmp_path / "duration_error_mins" / "metadata.json").exists()
+
+
+def test_train_final_model_returns_fitted_pipeline_for_classification() -> None:
+    frame = sample_analysis_data().iloc[:2].copy()
+
+    model, X, y, prepared = train_final_model(frame, "meaningful_overrun_flag")
+
+    assert X.columns.tolist() == list(final_model_spec("meaningful_overrun_flag").columns)
+    assert len(y) == 2
+    assert prepared.excluded_target_rows == 0
+    assert hasattr(model.named_steps["model"], "predict_proba")

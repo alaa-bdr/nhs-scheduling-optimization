@@ -1,4 +1,6 @@
-"""Execute and validate all three supervised-modelling notebooks."""
+"""Execute and validate supervised-modelling notebooks."""
+
+from argparse import ArgumentParser
 
 from pathlib import Path
 
@@ -8,13 +10,25 @@ from nbclient import NotebookClient
 
 
 ROOT = Path(__file__).resolve().parents[1]
-NOTEBOOKS = (
-    "nbt_duration_error_regression.ipynb",
-    "nbt_operation_length_regression.ipynb",
-    "nbt_meaningful_overrun_classification.ipynb",
-)
+NOTEBOOKS = {
+    "duration_error_mins": "nbt_duration_error_regression.ipynb",
+    "operation_length_mins": "nbt_operation_length_regression.ipynb",
+    "meaningful_overrun_flag": "nbt_meaningful_overrun_classification.ipynb",
+}
 
-for filename in NOTEBOOKS:
+
+parser = ArgumentParser()
+parser.add_argument(
+    "--target",
+    choices=tuple(NOTEBOOKS),
+    action="append",
+    help="Target notebook to execute. Repeat to execute more than one. Defaults to all targets.",
+)
+args = parser.parse_args()
+targets = tuple(args.target) if args.target else tuple(NOTEBOOKS)
+
+for target in targets:
+    filename = NOTEBOOKS[target]
     path = ROOT / "notebooks" / filename
     notebook = nbformat.read(path, as_version=4)
     client = NotebookClient(
@@ -30,7 +44,7 @@ for filename in NOTEBOOKS:
 
 summary_rows = []
 importance_frames = []
-for target in ("duration_error_mins", "operation_length_mins", "meaningful_overrun_flag"):
+for target in NOTEBOOKS:
     result_dir = ROOT / "result" / "modeling" / target
     selection = pd.read_csv(result_dir / "selection_summary.csv").set_index("selection")["value"]
     metrics = pd.read_csv(result_dir / "final_test_metrics.csv").iloc[0]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -25,6 +26,7 @@ START_HOUR_COLUMN = "operation_start_hour"
 REVIEW_FLAG_COLUMN = "duration_timing_review_flag"
 CLASSIFICATION_TARGET = "meaningful_overrun_flag"
 REGRESSION_TARGETS = ("operation_length_mins", "duration_error_mins")
+REQUIRED_NON_IMPUTED_PREDICTORS = ("ExpectedDurationMins",)
 
 OUTCOME_OR_LEAKAGE_COLUMNS = (
     "operation_length_mins",
@@ -71,6 +73,18 @@ class TargetData:
     target: pd.Series
     review_flag: pd.Series
     excluded_target_rows: int
+    excluded_required_predictor_rows: int
+
+
+@dataclass(frozen=True)
+class FinalModelSpec:
+    target: str
+    model_name: str
+    feature_configuration: str
+    columns: tuple[str, ...]
+    missing_strategy: str
+    parameters: dict[str, object]
+    threshold: float | None = None
 
 
 def _normalize_predictors(frame: pd.DataFrame) -> pd.DataFrame:
@@ -97,13 +111,25 @@ def prepare_target_data(df: pd.DataFrame, target: str) -> TargetData:
         eligible &= y.isin([0, 1])
     available = [column for column in (*APPROVED_PREDICTORS, START_HOUR_COLUMN) if column in df]
     X = _normalize_predictors(df.loc[eligible, available])
-    y = y.loc[eligible].astype(int if target == CLASSIFICATION_TARGET else float)
+    y = y.loc[eligible]
     review = df.loc[eligible, REVIEW_FLAG_COLUMN].fillna(False).astype(bool)
+
+    required_available = [column for column in REQUIRED_NON_IMPUTED_PREDICTORS if column in X]
+    missing_required = (
+        X[required_available].isna().any(axis=1)
+        if required_available
+        else pd.Series(False, index=X.index)
+    )
+    if missing_required.any():
+        X = X.loc[~missing_required]
+        y = y.loc[~missing_required]
+        review = review.loc[~missing_required]
+    y = y.astype(int if target == CLASSIFICATION_TARGET else float)
 
     forbidden = set(OUTCOME_OR_LEAKAGE_COLUMNS).intersection(X.columns)
     if forbidden:
         raise AssertionError(f"Leakage columns entered predictors: {sorted(forbidden)}")
-    return TargetData(X, y, review, int((~eligible).sum()))
+    return TargetData(X, y, review, int((~eligible).sum()), int(missing_required.sum()))
 
 
 def predictor_row_groups(predictors: pd.DataFrame) -> pd.Series:
@@ -149,12 +175,33 @@ def build_preprocessor(
         raise ValueError(f"Unknown missing strategy: {missing_strategy}")
     numeric_columns = [column for column in predictors if is_numeric_dtype(predictors[column])]
     categorical_columns = [column for column in predictors if column not in numeric_columns]
+    required_numeric_columns = [
+        column for column in numeric_columns if column in REQUIRED_NON_IMPUTED_PREDICTORS
+    ]
+    imputed_numeric_columns = [
+        column for column in numeric_columns if column not in required_numeric_columns
+    ]
 
+    transformers = []
     numeric_steps = []
     if missing_strategy == "missing_aware":
         numeric_steps.append(("imputer", SimpleImputer(strategy="median", add_indicator=True)))
     if scale_numeric:
         numeric_steps.append(("scaler", StandardScaler()))
+    if imputed_numeric_columns:
+        transformers.append(("numeric", Pipeline(numeric_steps), imputed_numeric_columns))
+
+    required_numeric_steps = []
+    if scale_numeric:
+        required_numeric_steps.append(("scaler", StandardScaler()))
+    if required_numeric_columns:
+        required_numeric_transformer = (
+            Pipeline(required_numeric_steps) if required_numeric_steps else "passthrough"
+        )
+        transformers.append(
+            ("required_numeric", required_numeric_transformer, required_numeric_columns)
+        )
+
     categorical_steps = []
     if missing_strategy == "missing_aware":
         categorical_steps.append(
@@ -163,11 +210,10 @@ def build_preprocessor(
     categorical_steps.append(
         ("onehot", OneHotEncoder(handle_unknown="ignore", min_frequency=10))
     )
+    if categorical_columns:
+        transformers.append(("categorical", Pipeline(categorical_steps), categorical_columns))
     return ColumnTransformer(
-        transformers=[
-            ("numeric", Pipeline(numeric_steps), numeric_columns),
-            ("categorical", Pipeline(categorical_steps), categorical_columns),
-        ],
+        transformers=transformers,
         remainder="drop",
     )
 
@@ -305,6 +351,129 @@ def classification_parameter_grids() -> dict[str, dict[str, list[object]]]:
             "model__alpha": [0.0001, 0.001],
         },
     }
+
+
+FINAL_MODEL_SPECS = {
+    "duration_error_mins": FinalModelSpec(
+        target="duration_error_mins",
+        model_name="XGBoost",
+        feature_configuration="Both procedure levels",
+        columns=(
+            "ExpectedDurationMins",
+            "sex_national_code",
+            "age_at_operation",
+            "ASAScore",
+            "anaesthetic_desc",
+            "admission_type_label",
+            "intended_management_label",
+            "priority_level_label",
+            "procedure_code_group",
+            "procedure_code_category",
+        ),
+        missing_strategy="missing_aware",
+        parameters={"learning_rate": 0.08, "max_depth": 6},
+    ),
+    "operation_length_mins": FinalModelSpec(
+        target="operation_length_mins",
+        model_name="XGBoost",
+        feature_configuration="Both procedure levels",
+        columns=(
+            "ExpectedDurationMins",
+            "sex_national_code",
+            "age_at_operation",
+            "ASAScore",
+            "anaesthetic_desc",
+            "admission_type_label",
+            "intended_management_label",
+            "priority_level_label",
+            "procedure_code_group",
+            "procedure_code_category",
+        ),
+        missing_strategy="missing_aware",
+        parameters={"learning_rate": 0.08, "max_depth": 6},
+    ),
+    "meaningful_overrun_flag": FinalModelSpec(
+        target="meaningful_overrun_flag",
+        model_name="XGBoost",
+        feature_configuration="Both procedure levels",
+        columns=(
+            "ExpectedDurationMins",
+            "sex_national_code",
+            "age_at_operation",
+            "ASAScore",
+            "anaesthetic_desc",
+            "admission_type_label",
+            "intended_management_label",
+            "priority_level_label",
+            "procedure_code_group",
+            "procedure_code_category",
+        ),
+        missing_strategy="missing_aware",
+        parameters={"learning_rate": 0.08, "max_depth": 6},
+        threshold=0.54,
+    ),
+}
+
+
+def final_model_spec(target: str) -> FinalModelSpec:
+    """Return the primary fitted-model specification selected in notebooks."""
+    if target not in FINAL_MODEL_SPECS:
+        raise ValueError(f"Unsupported target: {target}")
+    return FINAL_MODEL_SPECS[target]
+
+
+def build_final_model(spec: FinalModelSpec, predictors: pd.DataFrame, y: pd.Series) -> Pipeline:
+    """Create the primary winning pipeline for a target."""
+    if spec.target == CLASSIFICATION_TARGET:
+        model = classification_models(y)[spec.model_name]
+    else:
+        model = regression_models()[spec.model_name]
+    model.set_params(**spec.parameters)
+    return build_supervised_pipeline(model, predictors, missing_strategy=spec.missing_strategy)
+
+
+def train_final_model(df: pd.DataFrame, target: str) -> tuple[Pipeline, pd.DataFrame, pd.Series, TargetData]:
+    """Fit the primary winning pipeline on all eligible rows for one target."""
+    spec = final_model_spec(target)
+    prepared = prepare_target_data(df, target)
+    missing_columns = [column for column in spec.columns if column not in prepared.predictors]
+    if missing_columns:
+        raise ValueError(f"Required model columns are missing: {missing_columns}")
+    X = prepared.predictors.loc[:, list(spec.columns)].copy()
+    model = build_final_model(spec, X, prepared.target)
+    model.fit(X, prepared.target)
+    return model, X, prepared.target, prepared
+
+
+def save_final_model_artifact(
+    df: pd.DataFrame,
+    target: str,
+    output_dir: str | Path,
+) -> dict[str, object]:
+    """Train and save a final model pipeline plus lightweight metadata."""
+    from joblib import dump
+
+    model, X, y, prepared = train_final_model(df, target)
+    spec = final_model_spec(target)
+    target_dir = Path(output_dir) / target
+    target_dir.mkdir(parents=True, exist_ok=True)
+    model_path = target_dir / "final_pipeline.joblib"
+    dump(model, model_path)
+    metadata = {
+        "target": target,
+        "model_name": spec.model_name,
+        "feature_configuration": spec.feature_configuration,
+        "columns": list(spec.columns),
+        "missing_strategy": spec.missing_strategy,
+        "parameters": spec.parameters,
+        "threshold": spec.threshold,
+        "training_rows": int(len(y)),
+        "excluded_target_rows": prepared.excluded_target_rows,
+        "excluded_required_predictor_rows": prepared.excluded_required_predictor_rows,
+        "artifact_path": str(model_path),
+    }
+    pd.Series(metadata, dtype="object").to_json(target_dir / "metadata.json", indent=2)
+    return metadata
 
 
 def aggregate_tree_importance(pipeline: Pipeline, original_columns: list[str]) -> pd.DataFrame:

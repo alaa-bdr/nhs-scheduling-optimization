@@ -63,7 +63,7 @@ Seven exact source-level duplicates are removed by the cleaning pipeline. `Theat
 7. Freeze the model and evaluate the untouched test set once.
 8. Run start-hour, flagged-record and complete-case sensitivity analyses.
 
-Missing-aware preprocessing does not claim that an unknown clinical value has a particular value. Categorical missingness is represented explicitly as `Missing/not recorded`; numerical imputation is a fold-fitted median placeholder accompanied by a missingness indicator. Complete cases are reported separately because they represent a smaller, selected population.
+Missing-aware preprocessing does not claim that an unknown clinical value has a particular value. Categorical missingness is represented explicitly as `Missing/not recorded`; ordinary numerical imputation is a fold-fitted median placeholder accompanied by a missingness indicator. `ExpectedDurationMins` is different: it is the hospital planning duration and is required, not imputed. Complete cases are reported separately because they represent a smaller, selected population.
 """),
         code(f"""
 from pathlib import Path
@@ -92,7 +92,8 @@ if PROJECT_ROOT.name == "notebooks":
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from nbt_pipeline.modeling import (
-    START_HOUR_COLUMN, aggregate_tree_importance, build_supervised_pipeline, classification_models,
+    REQUIRED_NON_IMPUTED_PREDICTORS, START_HOUR_COLUMN,
+    aggregate_tree_importance, build_supervised_pipeline, classification_models,
     classification_parameter_grids, feature_configurations, prepare_target_data,
     predictor_row_groups, regression_models, regression_parameter_grids,
 )
@@ -109,6 +110,8 @@ pd.set_option("display.max_columns", 100)
 ## 2. Population, target and leakage audit
 
 Rows without an observed target cannot train or evaluate a supervised model and are excluded. Predictor missingness is retained at this stage so missing-data strategies can be compared inside training folds. The duration-review flag is preserved for audit but prohibited from the predictor matrix.
+
+`ExpectedDurationMins` is treated as a required planning variable, not a value to be statistically filled in. A missing planned duration has no reliable scheduling meaning, so rows missing this field are excluded from the model population whenever it is required.
 """),
         code("""
 analysis_df = build_analysis_dataset()
@@ -120,12 +123,14 @@ review_all = prepared.review_flag
 population_audit = pd.DataFrame({
     "measure": [
         "cleaned rows", "cleaned columns", "target-ineligible rows",
-        "target-eligible rows", "identical predictor profiles",
-        "duration-review records", "target mean/prevalence",
+        "required-planning rows excluded", "model-eligible rows",
+        "identical predictor profiles", "duration-review records",
+        "target mean/prevalence",
     ],
     "value": [
         len(analysis_df), analysis_df.shape[1], prepared.excluded_target_rows,
-        len(y_all), int(X_all.duplicated().sum()), int(review_all.sum()), y_all.mean(),
+        prepared.excluded_required_predictor_rows, len(y_all),
+        int(X_all.duplicated().sum()), int(review_all.sum()), y_all.mean(),
     ],
 })
 missingness_audit = pd.DataFrame({
@@ -148,6 +153,9 @@ assert not {
 assert "theatre_area" not in X_all.columns
 assert "TheatreRoom" in X_all.columns
 assert y_all.notna().all()
+for required_column in REQUIRED_NON_IMPUTED_PREDICTORS:
+    if required_column in X_all:
+        assert X_all[required_column].notna().all()
 """),
         md("""
 ## 3. Fixed grouped development and untouched test partitions
@@ -535,6 +543,29 @@ sensitivity_rows.append({
 })
 sensitivity_results = pd.DataFrame(sensitivity_rows)
 sensitivity_results
+"""),
+        code("""
+primary_row = sensitivity_results.set_index("analysis").loc["Primary"]
+start_row = sensitivity_results.set_index("analysis").loc["Start hour included"]
+if TASK == "classification":
+    start_hour_interpretation = (
+        "Adding provisional operation_start_hour changed PR-AUC from "
+        f"{primary_row['PR-AUC']:.3f} to {start_row['PR-AUC']:.3f} "
+        f"and recall from {primary_row['recall']:.3f} to {start_row['recall']:.3f}. "
+        "Because start hour was reconstructed rather than directly validated from the "
+        "operational source system, it is reported as sensitivity-only and is not adopted "
+        "as a primary predictor."
+    )
+else:
+    start_hour_interpretation = (
+        "Adding provisional operation_start_hour changed MAE from "
+        f"{primary_row['MAE']:.2f} to {start_row['MAE']:.2f} minutes "
+        f"and R2 from {primary_row['R2']:.3f} to {start_row['R2']:.3f}. "
+        "Because start hour was reconstructed rather than directly validated from the "
+        "operational source system, it is reported as sensitivity-only and is not adopted "
+        "as a primary predictor."
+    )
+print(start_hour_interpretation)
 """),
         md("""
 ## 12. Model interpretation

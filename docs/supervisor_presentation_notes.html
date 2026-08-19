@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Supervisor Presentation Notes</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Supervisor Presentation Notes</h1>
+</header>
+<h1 id="supervisor-presentation-notes">Supervisor Presentation
+Notes</h1>
+<h2 id="project-aim">1. Project Aim</h2>
+<p>The aim of this project was to understand why theatre operations
+finish earlier or later than planned, and to test whether
+machine-learning models can improve scheduling predictions.</p>
+<p>The analysis followed the notebooks in this order:</p>
+<ol type="1">
+<li><code>nbt_smallset_preprocessing.ipynb</code></li>
+<li><code>nbt_smallset_data_cleaning.ipynb</code></li>
+<li><code>nbt_smallset_statistical_analysis.ipynb</code></li>
+<li><code>nbt_duration_error_regression.ipynb</code></li>
+<li><code>nbt_operation_length_regression.ipynb</code></li>
+<li><code>nbt_meaningful_overrun_classification.ipynb</code></li>
+<li><code>nbt_modeling_summary.ipynb</code></li>
+</ol>
+<p>The three final prediction questions were:</p>
+<ul>
+<li>Will the operation meaningfully overrun?</li>
+<li>How long will the operation take?</li>
+<li>How many minutes should be added to or subtracted from the planned
+duration?</li>
+</ul>
+<h2 id="preprocessing-notebook">2. Preprocessing Notebook</h2>
+<p>Notebook: <code>notebooks/nbt_smallset_preprocessing.ipynb</code></p>
+<h3 id="question">Question</h3>
+<p>What is inside the raw NBT theatre dataset, and what data-quality
+issues must be handled before analysis?</p>
+<h3 id="method">Method</h3>
+<p>The notebook first inspected the raw dataset structure, missing
+values, duplicate rows, numeric variables, categorical variables,
+procedure codes, staff codes, theatre-room features, session
+descriptions, and time columns.</p>
+<p>Important sections:</p>
+<ul>
+<li>Section 3: Basic structure</li>
+<li>Section 4: Data quality checks</li>
+<li>Section 5: Numeric variable inspection</li>
+<li>Section 6: Categorical and coded variable inspection</li>
+<li>Section 7: Feature extraction</li>
+<li>Section 8: Time column inspection and provisional duration
+validation</li>
+<li>Section 10: EDA on cleaned data</li>
+</ul>
+<h3 id="main-results">Main Results</h3>
+<p>The raw/preprocessed dataset had 14,918 rows and 66 columns before
+final cleaning.</p>
+<p>Section 4 found seven exact duplicate rows. These were removed later
+in the cleaning pipeline.</p>
+<p>Section 5 showed that planned duration and recorded operation
+duration were usable, but some duration errors were very large. These
+extreme records were not deleted automatically. Instead, they were
+flagged for review.</p>
+<p>Section 6 showed that procedure codes were mostly complete and
+internally consistent, but there were 1,038 unique procedure codes.
+Because this was too detailed for modelling, procedure information was
+grouped into more stable features:</p>
+<ul>
+<li><code>procedure_code_category</code></li>
+<li><code>procedure_code_group</code></li>
+</ul>
+<p>Section 7 extracted useful features from existing fields,
+including:</p>
+<ul>
+<li>procedure hierarchy</li>
+<li>session specialty</li>
+<li>theatre-room features</li>
+<li>provisional start-hour information</li>
+</ul>
+<p>Section 8 showed that reconstructed time features were useful for
+exploratory checks, but not fully validated. Therefore, raw and
+reconstructed timestamps were not used as primary predictors.</p>
+<h3 id="eda-bottleneck-findings">EDA Bottleneck Findings</h3>
+<p>The bottleneck analysis is mainly in Section 10 of
+<code>nbt_smallset_preprocessing.ipynb</code>. The notebook does not
+label the charts as “Figure 1”, “Figure 2”, etc. Therefore, in the
+presentation I should refer to the notebook section and chart
+title/topic.</p>
+<p>The main bottleneck question was:</p>
+<p>Which parts of the scheduling process show repeated evidence of
+pressure, underestimation, or unstable planned duration?</p>
+<p>The notebook did not define a bottleneck using one number only. It
+used several pieces of evidence together:</p>
+<ul>
+<li>case volume</li>
+<li>meaningful-overrun rate</li>
+<li>meaningful-underrun rate</li>
+<li>median duration error</li>
+<li>recorded operation length</li>
+<li>theatre occupancy, only as provisional evidence</li>
+<li>whether the pattern repeats across procedure, room, time, or
+pathway</li>
+</ul>
+<p>This is important because a high overrun percentage alone can be
+misleading if the category has very few cases. A useful bottleneck
+candidate should usually have both enough cases and a meaningful
+duration problem.</p>
+<h4 id="evidence-1-planned-versus-actual-duration">Evidence 1: Planned
+Versus Actual Duration</h4>
+<p>Reference: Section 10.4, “Planned versus actual duration”.</p>
+<p>This chart compares <code>ExpectedDurationMins</code> with
+<code>operation_length_mins</code>.</p>
+<p>What the graph proves:</p>
+<ul>
+<li>There is a positive relationship: longer planned operations are
+usually longer recorded operations.</li>
+<li>However, the spread around the diagonal line is wide.</li>
+<li>Points above the diagonal are overruns.</li>
+<li>Points below the diagonal are underruns.</li>
+<li>Planned durations often appear in repeated booking increments, while
+actual duration varies more continuously.</li>
+</ul>
+<p>How to explain it:</p>
+<p>“The planned duration is useful, but it is not accurate enough for
+every individual case. Some operations are booked too short and some too
+long. This is why we later model both operation length and duration
+error.”</p>
+<p>Key result from the notebook:</p>
+<ul>
+<li>median planning error was about -8 minutes</li>
+<li>mean planning error was about -0.5 minutes</li>
+<li>this means the average looks balanced, but individual cases still
+vary widely</li>
+</ul>
+<p>So the first bottleneck is not one theatre room. It is the
+uncertainty in planned-versus-recorded duration.</p>
+<h4 id="evidence-2-operation-length-by-category">Evidence 2: Operation
+Length By Category</h4>
+<p>Reference: Section 10.5, especially:</p>
+<ul>
+<li>Section 10.5.1, “Operation-length distribution by ordered clinical
+category”</li>
+<li>Section 10.5.4, “Comparable categorical outcome dashboards”</li>
+</ul>
+<p>These charts compare operation length, overrun, underrun, and median
+error across categories such as admission type, intended management,
+anaesthetic type, theatre area, specialty, ASA, and priority.</p>
+<p>What the graphs prove:</p>
+<ul>
+<li>Operation duration is strongly linked to case mix.</li>
+<li>Emergency and inpatient pathways behave differently from elective
+waiting-list and day-case activity.</li>
+<li>General anaesthetic and combined anaesthetic cases tend to have
+longer recorded durations.</li>
+<li>Some categories show high overrun rates, while others show high
+underrun rates.</li>
+</ul>
+<p>Important examples from Section 10.5.4:</p>
+<ul>
+<li>Elective waiting-list cases were the largest group and often
+finished under plan.</li>
+<li>Emergency A&amp;E cases had longer duration and positive median
+error.</li>
+<li>Inpatient operations were longer and had more meaningful overruns
+than day cases.</li>
+<li>Day cases had many meaningful underruns, suggesting conservative
+booking or different case mix.</li>
+<li>Gynae and Hybrid Theatre showed stronger pressure patterns than some
+lower-duration areas.</li>
+<li>Plastic Minor had short operations and high meaningful-underrun
+proportions.</li>
+</ul>
+<p>How to explain it:</p>
+<p>“The bottleneck is not just time lost inside theatre. It is also
+booking calibration. Some pathways appear underestimated, while others
+appear conservatively booked.”</p>
+<p>This supports the modelling decision to include:</p>
+<ul>
+<li>admission type</li>
+<li>intended management</li>
+<li>anaesthetic type</li>
+<li>procedure group/category</li>
+<li>expected duration</li>
+</ul>
+<h4 id="evidence-3-theatre-flow-bottleneck-eda">Evidence 3: Theatre-Flow
+Bottleneck EDA</h4>
+<p>Reference: Section 10.6, “Bottleneck EDA setup”.</p>
+<p>Important chart sections:</p>
+<ul>
+<li>Section 10.6.1, “Recorded operation length and provisional
+theatre-flow profile”</li>
+<li>Section 10.6.2, “Provisional flow patterns by operational
+category”</li>
+<li>Section 10.6.3, “Assumption-sensitivity checks for stage
+contribution and delay signals”</li>
+</ul>
+<p>These charts looked at provisional theatre-flow features such as:</p>
+<ul>
+<li>theatre occupancy</li>
+<li>theatre-to-anaesthetic start</li>
+<li>anaesthetic-to-incision</li>
+<li>incision-to-closure</li>
+<li>closure-to-operation end</li>
+</ul>
+<p>What the graphs suggest:</p>
+<ul>
+<li>Different areas and rooms have different recorded operation
+lengths.</li>
+<li>Hybrid Theatre had a longer provisional profile.</li>
+<li>Some reconstructed stage medians varied by room, procedure,
+anaesthetic type, and duration status.</li>
+</ul>
+<p>But the notebook is careful:</p>
+<ul>
+<li>these stage durations come from reconstructed timestamps</li>
+<li>the reconstruction uses assumptions</li>
+<li>passing the reconstruction rule does not prove the inferred times
+are correct</li>
+<li>these figures are sensitivity evidence, not confirmed bottleneck
+proof</li>
+</ul>
+<p>How to explain it:</p>
+<p>“The theatre-flow figures are useful for discussion with NBT, but I
+do not use them as primary evidence. They tell us where to ask
+operational questions, not where to declare a confirmed bottleneck.”</p>
+<p>This is why raw timing and stage-duration columns were dropped from
+the final modelling dataset.</p>
+<h4 id="evidence-4-start-time-and-time-of-day-pressure">Evidence 4:
+Start-Time And Time-of-Day Pressure</h4>
+<p>Reference: Section 10.7, “Start-time and delay patterns”, and Section
+10.11.8, “Duration-status dashboard by time and case type”.</p>
+<p>Important chart topic:</p>
+<ul>
+<li>“Hourly status-rate and median-error figures”</li>
+</ul>
+<p>What the graphs show:</p>
+<ul>
+<li>High proportional overrun appears overnight and after 20:00, but
+these periods have low case volume.</li>
+<li>In the busy daytime period, 09:00 and 14:00 show comparatively
+greater overrun pressure.</li>
+<li>Around 15:00-16:59, the charts show more underrun.</li>
+<li>Median duration error is shown alongside rates, so small differences
+are not exaggerated.</li>
+</ul>
+<p>How to explain it:</p>
+<p>“Time of day appears to contain some scheduling signal. However,
+because operation start hour was reconstructed, I kept it as a
+sensitivity feature rather than a primary predictor.”</p>
+<p>This was later confirmed in the modelling notebooks:</p>
+<ul>
+<li>for <code>duration_error_mins</code>, start hour improved MAE from
+31.11 to 30.68</li>
+<li>for <code>operation_length_mins</code>, start hour improved MAE from
+30.62 to 30.38</li>
+<li>for <code>meaningful_overrun_flag</code>, start hour improved PR-AUC
+from 0.797 to 0.801</li>
+</ul>
+<p>So the graphs and models agree that start hour may matter, but it
+needs validation.</p>
+<h4 id="evidence-5-theatre-room-pressure">Evidence 5: Theatre-Room
+Pressure</h4>
+<p>Reference: Section 10.8, “Theatre and start-time bottleneck checks”,
+and Section 10.8.1, “Theatre-room pressure profile”.</p>
+<p>These charts examine exact theatre rooms using case volume, overrun
+rate, underrun rate, and median error.</p>
+<p>What the graphs show:</p>
+<ul>
+<li>Some rooms have higher apparent overrun pressure.</li>
+<li>Some rooms have more underrun, suggesting conservative booking or
+different case mix.</li>
+<li>High-volume rooms give more stable evidence than low-volume
+rooms.</li>
+</ul>
+<p>But the interpretation is cautious:</p>
+<ul>
+<li>rooms are not randomly assigned</li>
+<li>different rooms handle different specialties and procedures</li>
+<li>a high room overrun rate may reflect case mix, not room
+inefficiency</li>
+</ul>
+<p>How to explain it:</p>
+<p>“Theatre room is useful for EDA, but it should not be interpreted as
+room performance. It identifies where further case-mix-adjusted analysis
+is needed.”</p>
+<p>This also explains why <code>TheatreRoom</code> was tested in
+modelling but not selected in the final primary model. Once procedure
+and other preoperative variables were included, <code>TheatreRoom</code>
+did not improve prediction enough.</p>
+<h4 id="evidence-6-procedure-consultant-and-room-interactions">Evidence
+6: Procedure, Consultant, And Room Interactions</h4>
+<p>Reference: Section 10.11, “Deeper visual relationship EDA”.</p>
+<p>Important chart sections:</p>
+<ul>
+<li>Section 10.11.4, “Three-variable overrun and underrun relationship
+plots”</li>
+<li>Section 10.11.5, “Operational drilldowns: room, consultant,
+priority, and theatre-flow features”</li>
+<li>Section 10.11.6, “Consultant working-time and duration-status
+patterns”</li>
+<li>Section 10.11.7, “Procedure-group timing and bottleneck
+analysis”</li>
+<li>Section 10.11.7.2.1, “Official OPCS category: duration, occupancy,
+status, and operational context”</li>
+</ul>
+<p>These figures are stronger than simple one-variable charts because
+they combine multiple dimensions:</p>
+<ul>
+<li>procedure with theatre area</li>
+<li>procedure with room</li>
+<li>consultant with procedure</li>
+<li>consultant with theatre room</li>
+<li>procedure group with start hour</li>
+<li>expected duration, actual duration, and error together</li>
+</ul>
+<p>What the figures prove:</p>
+<ul>
+<li>procedure group is one of the strongest and most repeated sources of
+variation</li>
+<li>some procedure-room combinations show repeated pressure</li>
+<li>some consultant-room or consultant-procedure combinations show high
+overrun patterns</li>
+<li>these patterns need case-mix adjustment before interpretation</li>
+</ul>
+<p>How to explain it:</p>
+<p>“The deeper EDA shows that bottlenecks are interaction problems. A
+room, consultant, or time period cannot be judged alone, because the
+procedure type and case mix change the interpretation.”</p>
+<p>This supports using procedure hierarchy in the final model:</p>
+<ul>
+<li><code>procedure_code_group</code></li>
+<li><code>procedure_code_category</code></li>
+</ul>
+<p>It also supports excluding raw consultant identifiers from the final
+model because they are governance-sensitive, high-cardinality, and not
+safe to interpret as performance measures.</p>
+<h4 id="evidence-7-executive-bottleneck-evidence-dashboard">Evidence 7:
+Executive Bottleneck Evidence Dashboard</h4>
+<p>Reference: Section 10.14.1, “Executive bottleneck evidence
+dashboard”.</p>
+<p>This is the strongest summary figure for the bottleneck story.</p>
+<p>The dashboard combines:</p>
+<ul>
+<li>case volume</li>
+<li>meaningful-overrun rate</li>
+<li>total overrun minutes</li>
+<li>median duration error</li>
+<li>median theatre occupancy</li>
+</ul>
+<p>What the dashboard proves:</p>
+<ul>
+<li>bottleneck candidates should be prioritised when they combine
+volume, overrun rate, positive median error, and long duration or
+occupancy</li>
+<li>the dashboard avoids creating one misleading performance score</li>
+<li>it separates frequency, severity, and resource use</li>
+</ul>
+<p>How to explain it:</p>
+<p>“The dashboard is not a ranking of staff or theatres. It is a
+prioritisation tool. It tells us which categories deserve deeper review
+because they combine enough activity with evidence of planning
+pressure.”</p>
+<p>This dashboard supports the final modelling direction because the
+same important signals reappear:</p>
+<ul>
+<li>expected duration</li>
+<li>procedure type</li>
+<li>anaesthetic type</li>
+<li>intended management</li>
+<li>admission pathway</li>
+<li>timing sensitivity</li>
+</ul>
+<h4 id="final-bottleneck-conclusion">Final Bottleneck Conclusion</h4>
+<p>The EDA does not identify one single confirmed bottleneck. Instead,
+it shows several candidate bottleneck mechanisms:</p>
+<ol type="1">
+<li>Planning uncertainty: expected duration is useful but not accurate
+enough for all individual cases.</li>
+<li>Procedure complexity: procedure category and group repeatedly
+explain duration and overrun differences.</li>
+<li>Pathway differences: emergency and inpatient cases appear less
+predictable than elective/day-case work.</li>
+<li>Anaesthetic context: general or combined anaesthetic cases are
+linked with longer operation times.</li>
+<li>Location pressure: some theatre areas/rooms show pressure, but this
+overlaps with procedure mix.</li>
+<li>Time-of-day patterns: start hour may matter, especially around some
+daytime periods, but it is provisional.</li>
+<li>Data-quality pressure: missing priority and missing anaesthetic type
+are associated with different overrun rates.</li>
+</ol>
+<p>The safest presentation statement is:</p>
+<p>“The bottleneck evidence points to scheduling calibration rather than
+one isolated theatre delay. The strongest repeated signals are procedure
+type, expected duration, anaesthetic type, admission/intended-management
+pathway, and some provisional time/location interactions. Theatre-room
+and consultant patterns are useful for prioritisation, but they must not
+be presented as performance rankings without case-mix adjustment and
+source-system validation.”</p>
+<h2 id="cleaning-notebook">3. Cleaning Notebook</h2>
+<p>Notebook: <code>notebooks/nbt_smallset_data_cleaning.ipynb</code></p>
+<h3 id="question-1">Question</h3>
+<p>Which rows and columns should remain in the final analysis
+dataset?</p>
+<h3 id="method-1">Method</h3>
+<p>The cleaning notebook applied reproducible row and column decisions
+through the reusable pipeline code.</p>
+<p>Important sections:</p>
+<ul>
+<li>Section 1: Cleaning decisions</li>
+<li>Section 2.1: Row-level cleaning audit</li>
+<li>Section 3: Column-exclusion audit</li>
+<li>Section 4: Create the cleaned analysis dataset</li>
+<li>Section 5: Missingness after column selection</li>
+<li>Section 6: Outcome and predictor separation</li>
+</ul>
+<h3 id="row-cleaning">Row Cleaning</h3>
+<p>Seven exact source-level duplicate rows were removed.</p>
+<p>The 12 records flagged by <code>duration_timing_review_flag</code>
+were retained in the primary dataset. They were not deleted because the
+flag means “review needed”, not “definitely wrong”. These records were
+later tested in sensitivity analysis.</p>
+<h3 id="column-decisions">Column Decisions</h3>
+<p>The final cleaned dataset kept 14,911 rows and 22 columns.</p>
+<p>The column-selection procedure was not based only on missingness. A
+column was dropped if it was unsafe, duplicated other information, not
+available before the operation, too detailed for stable modelling, or
+likely to create leakage.</p>
+<p>The decision process was:</p>
+<ol type="1">
+<li>First create useful derived features from the raw data.</li>
+<li>Then remove raw fields that had been safely replaced by cleaner
+features.</li>
+<li>Keep target/outcome columns for analysis, but never use them as
+predictors.</li>
+<li>Keep only predictors that could reasonably be known before or at
+scheduling time.</li>
+<li>Keep provisional timing information only for sensitivity
+analysis.</li>
+</ol>
+<p>Dropped columns included:</p>
+<ul>
+<li>free text: <code>SessionIDdesc</code>,
+<code>theatre_notes</code></li>
+<li>raw procedure code and procedure description</li>
+<li>staff identifiers</li>
+<li>unvalidated session fields</li>
+<li>duplicate theatre-room components such as <code>theatre_area</code>,
+room prefix, room number, and IR indicator</li>
+<li>raw and reconstructed timestamps</li>
+<li>provisional stage-duration features</li>
+<li>raw admission, management, and priority codes after readable labels
+were created</li>
+<li>duplicate outcome columns</li>
+</ul>
+<p>Important retained columns included:</p>
+<ul>
+<li><code>TheatreRoom</code></li>
+<li><code>ExpectedDurationMins</code></li>
+<li><code>age_at_operation</code></li>
+<li><code>ASAScore</code></li>
+<li><code>admission_type_label</code></li>
+<li><code>intended_management_label</code></li>
+<li><code>priority_level_label</code></li>
+<li><code>procedure_code_category</code></li>
+<li><code>procedure_code_group</code></li>
+<li><code>session_specialty</code></li>
+<li><code>operation_start_hour</code></li>
+<li><code>duration_status</code></li>
+<li><code>duration_timing_review_flag</code></li>
+</ul>
+<h3 id="why-these-decisions-were-made">Why These Decisions Were
+Made</h3>
+<p>Free text and staff identifiers were removed for governance, privacy,
+interpretability, and overfitting reasons.</p>
+<p>Detailed procedure codes were replaced by grouped procedure features
+because the raw code had too many categories.</p>
+<p>Raw timestamps and end-time information were removed because they
+could create leakage. <code>operation_start_hour</code> was retained
+only for sensitivity testing.</p>
+<p>Missing clinical categories were not guessed or replaced with common
+values.</p>
+<h3 id="keepdrop-explanation-for-important-columns">Keep/Drop
+Explanation For Important Columns</h3>
+<p><code>ExpectedDurationMins</code> was kept because it is the
+hospital’s planned duration and is known before the operation. It is
+also the current benchmark that the model tries to improve.</p>
+<p><code>operation_length_mins</code>, <code>duration_error_mins</code>,
+and <code>meaningful_overrun_flag</code> were kept as targets/outcomes,
+but they were blocked from entering the predictor matrix.</p>
+<p><code>actual_proc_1_procedure_code</code> was dropped because it had
+too many detailed values. Instead, we kept
+<code>procedure_code_group</code> and
+<code>procedure_code_category</code>. This keeps procedure information
+but reduces sparsity and overfitting.</p>
+<p><code>ProcedureDescription</code> was dropped because it is
+high-cardinality text. It would require a separate text-processing
+method and stronger governance.</p>
+<p><code>TheatreRoom</code> was kept in the cleaned dataset because it
+is useful for EDA and sensitivity testing. However, it was not selected
+in the final primary model because it did not improve prediction after
+procedure and case-mix variables were included.</p>
+<p><code>theatre_area</code>, theatre prefix, room number, and IR
+indicator were dropped because they overlap with
+<code>TheatreRoom</code>. Keeping all of them would represent location
+several times and make interpretation unclear.</p>
+<p>Staff identifiers were dropped because they are sensitive,
+high-cardinality, and could cause the model to learn individual
+allocation patterns rather than general scheduling rules.</p>
+<p>Raw start/end timestamps and reconstructed stage durations were
+dropped from the primary model. End time is leakage because it happens
+after the operation. Start hour was kept only as
+<code>operation_start_hour</code> for sensitivity testing because it was
+reconstructed.</p>
+<p><code>ASAScore</code> was kept because it is clinically meaningful
+and available before surgery, but it was treated as categorical/ordinal
+clinical information rather than a normal continuous number.</p>
+<h2 id="statistical-analysis-notebook">4. Statistical Analysis
+Notebook</h2>
+<p>Notebook:
+<code>notebooks/nbt_smallset_statistical_analysis.ipynb</code></p>
+<h3 id="question-2">Question</h3>
+<p>Which differences in operation duration and overrun status are
+statistically supported?</p>
+<p>Important sections:</p>
+<ul>
+<li>Section 3: Planned versus recorded duration</li>
+<li>Section 4: Operation-duration differences across groups</li>
+<li>Section 5: Duration-status associations</li>
+<li>Section 6: Age and recorded sex</li>
+<li>Section 7: Missingness analysis</li>
+<li>Section 8: Adjusted meaningful-overrun model</li>
+<li>Section 8.1: Theatre-room by procedure-group interaction
+screening</li>
+<li>Section 9: Conclusions and decision rules</li>
+</ul>
+<h3 id="planned-versus-actual-duration">Planned Versus Actual
+Duration</h3>
+<p>Among 14,563 complete planned-versus-recorded pairs, the median
+planning error was -8 minutes. This means the typical operation finished
+slightly shorter than planned.</p>
+<p>The mean error was close to zero: -0.49 minutes. This means positive
+and negative errors roughly cancelled out overall.</p>
+<p>But individual cases were still uncertain. The approximate 95%
+agreement limits were about -134 to +133 minutes. So even if the average
+bias was small, individual cases could differ a lot from their planned
+duration.</p>
+<h3 id="group-differences">Group Differences</h3>
+<p>Section 4 used Kruskal-Wallis tests because operation durations were
+skewed.</p>
+<p>The strongest unadjusted differences in operation length were:</p>
+<ul>
+<li>procedure category: epsilon-squared 0.638</li>
+<li>theatre room: 0.312</li>
+<li>anaesthetic type: 0.298</li>
+<li>intended management: 0.242</li>
+<li>specialty: 0.193</li>
+<li>ASA: 0.114</li>
+<li>admission type: 0.041</li>
+<li>priority: 0.016</li>
+</ul>
+<p>This shows that procedure and operational context were much more
+informative than priority alone.</p>
+<h3 id="duration-status-associations">Duration-Status Associations</h3>
+<p>Section 5 tested associations with meaningful overrun, within
+tolerance, and meaningful underrun.</p>
+<p>The strongest associations were:</p>
+<ul>
+<li>procedure category: Cramer’s V 0.481</li>
+<li>theatre room: 0.407</li>
+<li>specialty: 0.308</li>
+<li>admission type: 0.306</li>
+<li>intended management: 0.269</li>
+<li>anaesthetic type: 0.204</li>
+<li>ASA: 0.150</li>
+</ul>
+<p>Priority was not significant after correction.</p>
+<h3 id="age-and-sex">Age and Sex</h3>
+<p>Section 6 showed that age and recorded sex were not major bottleneck
+drivers.</p>
+<p>Age had a very weak relationship with operation length and planning
+error. Sex had a statistically significant but tiny difference: median
+operation length was 71 minutes for code 1 and 69 minutes for code
+2.</p>
+<h3 id="missingness-analysis">Missingness Analysis</h3>
+<p>Section 7 showed that missingness was not random.</p>
+<p>For example:</p>
+<ul>
+<li>meaningful overrun was 44.0% when priority was missing versus 15.0%
+when priority was recorded</li>
+<li>meaningful overrun was 50.2% when anaesthetic type was missing
+versus 30.5% when recorded</li>
+</ul>
+<p>This is why the modelling used missing-aware handling instead of
+simply dropping all incomplete rows.</p>
+<h3 id="adjusted-model">Adjusted Model</h3>
+<p>Section 8 fitted an adjusted logistic model for meaningful
+overrun.</p>
+<p>The model used 14,563 cases and 4,569 meaningful overruns. McFadden
+pseudo-R2 was about 0.296, meaning the included variables improved fit
+over an intercept-only model.</p>
+<p>The model confirmed that unadjusted room effects must be interpreted
+carefully. Some apparent room differences weakened after adjusting for
+case mix.</p>
+<h3 id="room-by-procedure-screening">Room by Procedure Screening</h3>
+<p>Section 8.1 showed that some procedure groups had different overrun
+rates across rooms.</p>
+<p>Examples:</p>
+<ul>
+<li><code>V2</code>: Cramer’s V 0.619, overrun rates from 7.9% to 83.3%
+across rooms</li>
+<li><code>S5</code>: Cramer’s V 0.285, overrun rates from 34.7% to
+91.2%</li>
+<li><code>M1</code>: Cramer’s V 0.190</li>
+</ul>
+<p>These are screening results, not causal room-performance
+rankings.</p>
+<h2 id="modelling-method-used-in-all-three-modelling-notebooks">5.
+Modelling Method Used In All Three Modelling Notebooks</h2>
+<p>Modelling notebooks:</p>
+<ul>
+<li><code>notebooks/nbt_duration_error_regression.ipynb</code></li>
+<li><code>notebooks/nbt_operation_length_regression.ipynb</code></li>
+<li><code>notebooks/nbt_meaningful_overrun_classification.ipynb</code></li>
+</ul>
+<h3 id="general-method">General Method</h3>
+<p>Each modelling notebook followed the same structure:</p>
+<ol type="1">
+<li>Build the target-eligible population.</li>
+<li>Remove outcome/leakage predictors.</li>
+<li>Split into development and untouched test data.</li>
+<li>Compare missing-data strategies.</li>
+<li>Compare feature configurations.</li>
+<li>Compare algorithms.</li>
+<li>Tune the two leading algorithms.</li>
+<li>Evaluate the final model once on the untouched test set.</li>
+<li>Run sensitivity analyses.</li>
+<li>Export results and save evidence.</li>
+</ol>
+<p>The modelling process was deliberately staged. We did not choose the
+best model first. We first chose the best data treatment, then the best
+feature configuration, then the best algorithm.</p>
+<p>The modelling hierarchy was:</p>
+<ol type="1">
+<li>Compare missing-data strategies using the same baseline model.</li>
+<li>Freeze the best missing-data strategy.</li>
+<li>Compare feature configurations using the same model and same
+folds.</li>
+<li>Freeze the best feature configuration.</li>
+<li>Compare algorithms fairly on the same data.</li>
+<li>Tune the two strongest algorithms.</li>
+<li>Evaluate only once on the untouched test set.</li>
+</ol>
+<p>This protects the test set. The test set was not used repeatedly to
+make modelling decisions.</p>
+<h3 id="missing-value-strategy">Missing-Value Strategy</h3>
+<p>The best strategy was missing-aware preprocessing.</p>
+<p>This means:</p>
+<ul>
+<li>categorical missing values became
+<code>Missing/not recorded</code></li>
+<li><code>age_at_operation</code> used median placeholder plus a
+missingness indicator</li>
+<li><code>ExpectedDurationMins</code> was required and not imputed</li>
+<li>target values were never imputed</li>
+<li>leakage/outcome columns were never used as predictors</li>
+</ul>
+<p>This was implemented inside sklearn pipelines so that imputation and
+encoding were fitted only on training folds.</p>
+<p>This is important because missing values can carry information. For
+example, missing priority was associated with a different overrun rate
+in the statistical notebook. If we simply dropped all missing rows, we
+would analyse a selected subgroup rather than the full operational
+population.</p>
+<p>For categorical variables, the model sees missingness as its own
+category:</p>
+<p><code>Missing/not recorded</code></p>
+<p>This does not mean that missing ASA or missing priority is treated as
+a normal clinical value. It means the model is told that the value was
+not recorded.</p>
+<p>For numeric variables, only ordinary numeric predictors such as
+<code>age_at_operation</code> can use median imputation with a
+missingness indicator.</p>
+<p><code>ExpectedDurationMins</code> is different. It is a required
+planning variable and was not imputed. If planned duration is missing,
+the row is excluded for modelling because a median planned duration has
+no safe scheduling meaning.</p>
+<h3 id="feature-configuration">Feature Configuration</h3>
+<p>The winning feature configuration was
+<code>Both procedure levels</code>.</p>
+<p>The final primary predictors were:</p>
+<ul>
+<li><code>ExpectedDurationMins</code></li>
+<li><code>sex_national_code</code></li>
+<li><code>age_at_operation</code></li>
+<li><code>ASAScore</code></li>
+<li><code>anaesthetic_desc</code></li>
+<li><code>admission_type_label</code></li>
+<li><code>intended_management_label</code></li>
+<li><code>priority_level_label</code></li>
+<li><code>procedure_code_group</code></li>
+<li><code>procedure_code_category</code></li>
+</ul>
+<p><code>TheatreRoom</code> was tested but did not improve the winning
+primary model.</p>
+<p><code>operation_start_hour</code> was tested only as sensitivity.</p>
+<p>The feature configurations tested different possibilities:</p>
+<ul>
+<li>expected duration only</li>
+<li>clinical and planning variables</li>
+<li>procedure group only</li>
+<li>procedure category only</li>
+<li>both procedure group and category</li>
+<li>full approved set including location</li>
+<li>full approved set without location</li>
+</ul>
+<p>The winner was <code>Both procedure levels</code>. This means the
+model benefited from keeping both:</p>
+<ul>
+<li><code>procedure_code_group</code>, which is broader and more
+stable</li>
+<li><code>procedure_code_category</code>, which is more clinically
+specific</li>
+</ul>
+<p>Theatre room was tested. It was useful descriptively in the EDA, but
+it did not improve the final primary model enough once procedure,
+expected duration, anaesthetic type, admission pathway, intended
+management, ASA, age, sex, and priority were included.</p>
+<h3 id="algorithms-compared">Algorithms Compared</h3>
+<p>The models compared were:</p>
+<ul>
+<li>Dummy benchmark</li>
+<li>Linear/logistic regression</li>
+<li>Decision tree</li>
+<li>Random forest</li>
+<li>SVR/SVC</li>
+<li>XGBoost</li>
+<li>Neural network</li>
+</ul>
+<p>XGBoost was the best model for all three targets.</p>
+<p>The model comparison used cross-validation on the development data.
+This means the data was repeatedly split into training and validation
+folds, so every algorithm was compared under the same conditions.</p>
+<p>The dummy benchmark was included to show the value of modelling. For
+regression, the dummy model predicts a simple central value. For
+classification, the dummy model predicts based on class prevalence. A
+useful model should beat these simple baselines.</p>
+<p>XGBoost performed best because it can handle nonlinear relationships
+and interactions. This matters because theatre scheduling is not linear.
+Procedure type, expected duration, anaesthetic type, and management
+pathway interact with each other.</p>
+<p>The neural network was tested, but it did not beat XGBoost. This is
+reasonable because the dataset is tabular, and tree-based boosting
+methods often perform very strongly on tabular clinical/operational
+data.</p>
+<h3 id="why-some-eda-signals-look-different-from-model-importance">Why
+Some EDA Signals Look Different From Model Importance</h3>
+<p>EDA and model feature importance answer different questions.</p>
+<p>EDA asks:</p>
+<p>“Does this variable show a visible or statistical relationship with
+the outcome on its own?”</p>
+<p>Model feature importance asks:</p>
+<p>“How much extra predictive value does this variable add after the
+model already knows all the other variables?”</p>
+<p>This explains the ASA result.</p>
+<p>In EDA, <code>ASAScore</code> appeared important because operation
+duration and overrun rates differed across ASA groups. That is a real
+descriptive association.</p>
+<p>In the final model, <code>ASAScore</code> had lower feature
+importance because some of its signal overlaps with stronger
+predictors:</p>
+<ul>
+<li>procedure type</li>
+<li>expected duration</li>
+<li>anaesthetic type</li>
+<li>intended management</li>
+<li>admission pathway</li>
+<li>age</li>
+</ul>
+<p>For example, higher ASA patients may be more likely to have complex
+procedures, inpatient pathways, or general anaesthetic. Once the model
+already knows those variables, ASA adds less new information.</p>
+<p>So the correct interpretation is:</p>
+<p><code>ASAScore</code> is clinically meaningful, but it was not one of
+the strongest unique scheduling predictors in the final model.</p>
+<p>This does not mean ASA is unimportant medically. It only means that,
+for predicting duration/overrun in this dataset, much of its predictive
+information is already captured by other variables.</p>
+<p>The same logic applies to <code>TheatreRoom</code>. Theatre room
+looked important in EDA, but after procedure and pathway variables were
+included, it added little extra predictive power.</p>
+<h2 id="duration-error-modelling-notebook">6. Duration-Error Modelling
+Notebook</h2>
+<p>Notebook:
+<code>notebooks/nbt_duration_error_regression.ipynb</code></p>
+<h3 id="question-3">Question</h3>
+<p>How many minutes longer or shorter than planned will the operation
+be?</p>
+<p>Target:</p>
+<p><code>duration_error_mins = operation_length_mins - ExpectedDurationMins</code></p>
+<h3 id="result">Result</h3>
+<p>Best model: XGBoost</p>
+<p>Final test performance:</p>
+<ul>
+<li>MAE: 31.11 minutes</li>
+<li>RMSE: 50.71 minutes</li>
+<li>R2: 0.424</li>
+<li>within 10 minutes: 29.1%</li>
+<li>within 20 minutes: 52.2%</li>
+<li>within 30 minutes: 67.2%</li>
+<li>within 60 minutes: 86.9%</li>
+</ul>
+<h3 id="interpretation">Interpretation</h3>
+<p>The model improves over a simple benchmark, but this target is
+difficult because it predicts the error in the existing hospital
+estimate. Much of the predictable information is already inside
+<code>ExpectedDurationMins</code>, so the remaining error contains more
+noise.</p>
+<p>Top predictive features:</p>
+<ul>
+<li><code>ExpectedDurationMins</code></li>
+<li><code>anaesthetic_desc</code></li>
+<li><code>procedure_code_group</code></li>
+<li><code>procedure_code_category</code></li>
+<li><code>intended_management_label</code></li>
+</ul>
+<h3 id="start-hour-sensitivity">Start-Hour Sensitivity</h3>
+<p>Adding <code>operation_start_hour</code> improved the result:</p>
+<ul>
+<li>MAE changed from 31.11 to 30.68 minutes</li>
+<li>R2 changed from 0.424 to 0.457</li>
+</ul>
+<p>But this remains sensitivity-only because start hour was
+reconstructed and not directly validated.</p>
+<h3 id="what-this-result-means">What This Result Means</h3>
+<p><code>duration_error_mins</code> is operationally useful because it
+predicts the correction to the booked time.</p>
+<p>For example, if the hospital booked 90 minutes and the model predicts
+a +20 minute error, the corrected estimate would be about 110
+minutes.</p>
+<p>However, this target is harder than predicting operation length. It
+asks the model to predict where the hospital estimate is wrong. That
+remaining error includes unrecorded complexity, workflow variation,
+data-quality issues, and random clinical variation.</p>
+<p>This is why R2 was lower for duration error than for operation
+length.</p>
+<h2 id="operation-length-modelling-notebook">7. Operation-Length
+Modelling Notebook</h2>
+<p>Notebook:
+<code>notebooks/nbt_operation_length_regression.ipynb</code></p>
+<h3 id="question-4">Question</h3>
+<p>How many minutes will the operation take?</p>
+<p>Target:</p>
+<p><code>operation_length_mins</code></p>
+<h3 id="result-1">Result</h3>
+<p>Best model: XGBoost</p>
+<p>Final test performance:</p>
+<ul>
+<li>MAE: 30.62 minutes</li>
+<li>RMSE: 49.50 minutes</li>
+<li>R2: 0.712</li>
+<li>within 10 minutes: 30.0%</li>
+<li>within 20 minutes: 52.4%</li>
+<li>within 30 minutes: 67.4%</li>
+<li>within 60 minutes: 87.1%</li>
+</ul>
+<h3 id="interpretation-1">Interpretation</h3>
+<p>This was the strongest regression target. It performed better than
+<code>duration_error_mins</code> because actual operation length has
+clearer structure from planned duration, procedure type, anaesthetic
+type, and management pathway.</p>
+<p>Top predictive features:</p>
+<ul>
+<li><code>ExpectedDurationMins</code></li>
+<li><code>anaesthetic_desc</code></li>
+<li><code>intended_management_label</code></li>
+<li><code>procedure_code_group</code></li>
+<li><code>procedure_code_category</code></li>
+</ul>
+<h3 id="start-hour-sensitivity-1">Start-Hour Sensitivity</h3>
+<p>Adding <code>operation_start_hour</code> improved the result
+slightly:</p>
+<ul>
+<li>MAE changed from 30.62 to 30.38 minutes</li>
+<li>R2 changed from 0.712 to 0.720</li>
+</ul>
+<p>Again, this remains sensitivity-only because start hour was
+reconstructed.</p>
+<h3 id="what-this-result-means-1">What This Result Means</h3>
+<p>This model is the best if the aim is to predict the total expected
+operation length directly.</p>
+<p>It achieved R2 0.712, meaning it explained a large part of the
+variation in recorded operation length. This makes sense because the
+model can use the hospital’s planned duration plus procedure and
+case-mix information.</p>
+<p>The model also beats the hospital expected-duration benchmark,
+showing that the machine-learning model adds information beyond the
+existing booking estimate.</p>
+<h2 id="meaningful-overrun-classification-notebook">8.
+Meaningful-Overrun Classification Notebook</h2>
+<p>Notebook:
+<code>notebooks/nbt_meaningful_overrun_classification.ipynb</code></p>
+<h3 id="question-5">Question</h3>
+<p>Will the operation exceed its planned duration by more than the
+working tolerance?</p>
+<p>Target:</p>
+<p><code>meaningful_overrun_flag</code></p>
+<h3 id="result-2">Result</h3>
+<p>Best model: XGBoost</p>
+<p>Final test performance:</p>
+<ul>
+<li>accuracy: 0.811</li>
+<li>balanced accuracy: 0.802</li>
+<li>ROC-AUC: 0.887</li>
+<li>PR-AUC: 0.797</li>
+<li>precision: 0.671</li>
+<li>recall: 0.778</li>
+<li>F1: 0.720</li>
+<li>Brier score: 0.135</li>
+<li>selected threshold: 0.54</li>
+</ul>
+<h3 id="interpretation-2">Interpretation</h3>
+<p>The classifier was useful because it identified a meaningful overrun
+risk rather than predicting every small difference in minutes.</p>
+<p>Recall of 0.778 means the model found about 78% of true meaningful
+overruns on the test set.</p>
+<p>Precision of 0.671 means that when the model predicted a meaningful
+overrun, about 67% were actually meaningful overruns.</p>
+<p>Top predictive features:</p>
+<ul>
+<li><code>ExpectedDurationMins</code></li>
+<li><code>anaesthetic_desc</code></li>
+<li><code>procedure_code_group</code></li>
+<li><code>intended_management_label</code></li>
+<li><code>procedure_code_category</code></li>
+</ul>
+<h3 id="start-hour-sensitivity-2">Start-Hour Sensitivity</h3>
+<p>Adding <code>operation_start_hour</code> improved the result
+slightly:</p>
+<ul>
+<li>PR-AUC changed from 0.797 to 0.801</li>
+<li>recall changed from 0.778 to 0.785</li>
+</ul>
+<p>It remains sensitivity-only because the start hour was
+reconstructed.</p>
+<h3 id="what-this-result-means-2">What This Result Means</h3>
+<p>This model is useful if the operational question is risk
+screening:</p>
+<p>“Which cases are likely to overrun enough to matter?”</p>
+<p>Accuracy alone is not enough here because the classes are not
+perfectly balanced. That is why the notebook also reports PR-AUC,
+recall, precision, F1, ROC-AUC, and Brier score.</p>
+<p>Recall was about 0.778, meaning the model identified most true
+meaningful overruns. Precision was about 0.671, meaning not every
+predicted overrun was a real overrun. This trade-off is expected in a
+safety-oriented scheduling model: missing a true overrun can be more
+operationally costly than flagging some extra cases for review.</p>
+<h2 id="modelling-summary-notebook">9. Modelling Summary Notebook</h2>
+<p>Notebook: <code>notebooks/nbt_modeling_summary.ipynb</code></p>
+<h3 id="final-winner-table">Final Winner Table</h3>
+<p>All three targets selected XGBoost.</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>Target</th>
+<th>Winning missing strategy</th>
+<th>Winning feature configuration</th>
+<th>Winning model</th>
+<th>Main result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>duration_error_mins</code></td>
+<td>Missing-aware, priority retained</td>
+<td>Both procedure levels</td>
+<td>XGBoost</td>
+<td>MAE 31.11, R2 0.424</td>
+</tr>
+<tr>
+<td><code>operation_length_mins</code></td>
+<td>Missing-aware, priority retained</td>
+<td>Both procedure levels</td>
+<td>XGBoost</td>
+<td>MAE 30.62, R2 0.712</td>
+</tr>
+<tr>
+<td><code>meaningful_overrun_flag</code></td>
+<td>Missing-aware, priority retained</td>
+<td>Both procedure levels</td>
+<td>XGBoost</td>
+<td>PR-AUC 0.797, recall 0.778</td>
+</tr>
+</tbody>
+</table>
+<h3 id="best-overall-modelling-target">Best Overall Modelling
+Target</h3>
+<p>The strongest regression model was
+<code>operation_length_mins</code>, because it achieved R2 0.712.</p>
+<p>The most operationally direct correction target was
+<code>duration_error_mins</code>, but it was harder to predict.</p>
+<p>The most useful risk-screening target was
+<code>meaningful_overrun_flag</code>, because it identifies cases likely
+to exceed the working tolerance.</p>
+<h2 id="saved-final-models">10. Saved Final Models</h2>
+<p>The final fitted pipelines were saved as full sklearn pipelines,
+including preprocessing plus XGBoost.</p>
+<p>Saved files:</p>
+<ul>
+<li><code>result/modeling/final_models/duration_error_mins/final_pipeline.joblib</code></li>
+<li><code>result/modeling/final_models/operation_length_mins/final_pipeline.joblib</code></li>
+<li><code>result/modeling/final_models/meaningful_overrun_flag/final_pipeline.joblib</code></li>
+</ul>
+<p>Each model folder also includes <code>metadata.json</code>.</p>
+<h2 id="main-limitations">11. Main Limitations</h2>
+<p>The analysis does not prove causation.</p>
+<p>Theatre-room differences are not room-performance rankings because
+rooms receive different procedures and case mixes.</p>
+<p>Start-hour and theatre-flow features are provisional because they
+depend on reconstructed timestamps.</p>
+<p>Staff identifiers were excluded for governance and overfitting
+reasons.</p>
+<p>Priority has high missingness, so priority findings must be
+interpreted carefully.</p>
+<p>External or temporal validation is needed before any operational
+deployment.</p>
+<h2 id="simple-ending-for-presentation">12. Simple Ending For
+Presentation</h2>
+<p>The main conclusion is that theatre scheduling error is predictable
+to a useful extent, but not perfectly. Procedure type, expected
+duration, anaesthetic type, and intended management were consistently
+the strongest predictors. XGBoost gave the best performance across all
+three prediction tasks. The direct operation-length model had the
+strongest numerical performance, while the overrun classifier is easiest
+to use for identifying high-risk cases. Start hour improved performance
+slightly, but it should remain sensitivity-only until the reconstructed
+timestamp is validated.</p>
+</body>
+</html>
