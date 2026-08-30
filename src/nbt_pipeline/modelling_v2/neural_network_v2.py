@@ -37,14 +37,11 @@ def run():
 
     pipeline = Pipeline([
         ("scale", StandardScaler()),
-        ("net", MLPRegressor(max_iter=300, early_stopping=True,
-                             n_iter_no_change=10, random_state=SEED)),
+        ("net", MLPRegressor(max_iter=200, early_stopping=True,
+                             n_iter_no_change=8, random_state=SEED)),
     ])
-    grid = {
-        "net__hidden_layer_sizes": [(64, 32), (128, 64), (256, 128)],
-        "net__alpha": [0.0001, 0.01],
-    }
-    print("Two layer network, 6 combinations x 3 folds = 18 fits")
+    grid = {"net__hidden_layer_sizes": [(64, 32), (128, 64), (256, 128)]}
+    print("Two layer network, 3 architectures x 3 folds = 9 fits")
 
     search = GridSearchCV(pipeline, grid,
                           cv=KFold(3, shuffle=True, random_state=SEED),
@@ -52,7 +49,6 @@ def run():
     search.fit(Xtr, ytr)
 
     print(f"Best architecture: {search.best_params_['net__hidden_layer_sizes']}")
-    print(f"Best alpha: {search.best_params_['net__alpha']}")
     print(f"Best CV R2: {search.best_score_:.4f}")
 
     pred = search.best_estimator_.predict(Xte)

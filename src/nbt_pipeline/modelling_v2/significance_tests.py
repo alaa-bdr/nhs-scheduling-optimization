@@ -1,8 +1,8 @@
 """Statistical significance testing between the leading models.
 
-Point estimates alone cannot show whether one model genuinely beats
-another. This compares per case absolute errors on the same test rows
-using paired tests, so differences are assessed on identical cases.
+Point estimates cannot show whether one model genuinely beats another.
+This compares per case absolute errors on identical test rows using
+paired Wilcoxon signed rank tests.
 """
 
 from pathlib import Path
@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 from scipy import stats
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Ridge
-from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.svm import SVR
@@ -45,7 +44,6 @@ def run():
     scaler = StandardScaler().fit(Xtr)
 
     errors = {}
-
     errors["Hospital estimate"] = np.abs(yte.values - Xte["ExpectedDurationMins"].values)
 
     ridge = Ridge(alpha=10.0).fit(scaler.transform(Xtr), ytr)
@@ -69,21 +67,19 @@ def run():
     for name, err in sorted(errors.items(), key=lambda kv: kv[1].mean()):
         print(f"  {name:20} {err.mean():.2f} mins")
 
-    print("\nPaired comparisons (Wilcoxon signed rank on absolute errors)")
+    print("\nPaired Wilcoxon signed rank tests on absolute errors")
     rows = []
     for a, b in combinations(errors, 2):
-        diff = errors[a] - errors[b]
         stat, p = stats.wilcoxon(errors[a], errors[b])
         better = a if errors[a].mean() < errors[b].mean() else b
         sig = "yes" if p < 0.05 else "no"
         rows.append({"model_a": a, "model_b": b,
                      "mae_a": errors[a].mean(), "mae_b": errors[b].mean(),
-                     "mean_difference": diff.mean(), "p_value": p,
-                     "significant_at_0.05": sig, "better_model": better})
+                     "p_value": p, "significant_at_0.05": sig,
+                     "better_model": better})
         print(f"  {a:20} vs {b:20} p={p:.2e}  {sig:3}  better: {better}")
 
-    results = pd.DataFrame(rows)
-    results.to_csv(OUT / "significance_tests.csv", index=False)
+    pd.DataFrame(rows).to_csv(OUT / "significance_tests.csv", index=False)
 
     names = list(errors)
     n = len(names)
@@ -106,7 +102,7 @@ def run():
                 mark = "*" if matrix[i, j] < 0.05 else ""
                 ax.text(j, i, f"{matrix[i, j]:.1e}{mark}", ha="center",
                         va="center", fontsize=7.5)
-    ax.set_title("Pairwise Significance (p values, * = significant at 0.05)",
+    ax.set_title("Pairwise Significance (p values, * significant at 0.05)",
                  fontweight="bold")
     fig.colorbar(im, ax=ax, label="log10 p value")
     fig.tight_layout()
