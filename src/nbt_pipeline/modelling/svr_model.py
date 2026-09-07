@@ -1,8 +1,4 @@
-"""Support Vector Regression for operation duration prediction.
-
-Full 5-fold cross-validation grid search on the entire training set,
-with a parameter range focused on values that suit this data.
-"""
+"""Support vector regression with grid search and cross validation."""
 
 from pathlib import Path
 

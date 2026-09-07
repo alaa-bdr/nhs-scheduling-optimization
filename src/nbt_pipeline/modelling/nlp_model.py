@@ -1,10 +1,4 @@
-"""NLP model for operation duration prediction from theatre notes.
-
-Turns the free-text theatre_notes column into numeric features using
-TF-IDF, then trains a regression model on those text features. This
-tests whether the clinical free text carries scheduling signal that
-the structured columns miss.
-"""
+"""Tests whether the free text theatre notes alone can predict operation length."""
 
 from pathlib import Path
 

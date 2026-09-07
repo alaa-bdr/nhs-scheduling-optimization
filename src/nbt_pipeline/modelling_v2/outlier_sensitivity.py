@@ -1,10 +1,4 @@
-"""Test how outlier handling affects R2 on the v2 feature set.
-
-A small number of very long operations carry most of the unexplained
-variance. This script quantifies how much of the reported R2 depends on
-how those cases are treated, so the final choice is evidence based and
-can be stated openly rather than applied silently.
-"""
+"""Tests how much capping very long operations affects the score."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Generate a visual results dashboard comparing all models."""
+"""Charts comparing the models against the hospital baseline."""
 
 from pathlib import Path
 

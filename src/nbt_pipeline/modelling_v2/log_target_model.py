@@ -1,9 +1,4 @@
-"""XGBoost tuned against a log transformed target, with text features.
-
-Operation durations are heavily right skewed, so R2 on raw minutes is
-dominated by a small number of very long cases. Modelling log duration
-is the standard treatment. Both scales are reported so nothing is hidden.
-"""
+"""Fits the model against log duration, since operation lengths are heavily skewed."""
 
 from __future__ import annotations
 

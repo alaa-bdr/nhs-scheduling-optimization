@@ -1,9 +1,4 @@
-"""Linear regression with all pre-operative features, one-hot encoded.
-
-This is the proper linear baseline for the model comparison. The
-baseline.py version used only 3 numeric features as a rough benchmark.
-This version uses every available pre-operative feature.
-"""
+"""Ridge regression across all features, as the simple model the others have to beat."""
 
 from pathlib import Path
 

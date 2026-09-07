@@ -1,4 +1,4 @@
-"""Two layer neural network for operation duration prediction."""
+"""Two layer neural network, testing three sizes."""
 
 from pathlib import Path
 import warnings

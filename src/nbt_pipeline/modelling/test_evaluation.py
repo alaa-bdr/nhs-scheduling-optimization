@@ -1,10 +1,4 @@
-"""Final test set evaluation for all five models.
-
-Every model is trained on the training set, its hyperparameters were
-selected using the validation set earlier, and here it is evaluated
-once on the held-out test set. These test scores are the final,
-unbiased results reported in the article.
-"""
+"""Scores every model once on the held out test set, which is the honest final number."""
 
 from pathlib import Path
 

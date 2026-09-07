@@ -1,4 +1,4 @@
-"""Run all five models on the v2 feature set and produce every chart."""
+"""Runs all five models on the improved features and produces every chart."""
 
 from pathlib import Path
 import warnings

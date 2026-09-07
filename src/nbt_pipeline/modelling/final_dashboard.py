@@ -1,8 +1,4 @@
-"""Final results dashboard comparing all five models plus the hospital baseline.
-
-Trains every model on the training set, evaluates on validation, and
-saves comparison charts. This is the headline figure set for the report.
-"""
+"""Retrains every model and produces the full set of comparison charts."""
 
 from pathlib import Path
 

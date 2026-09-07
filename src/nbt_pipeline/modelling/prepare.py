@@ -1,11 +1,4 @@
-"""Prepare train/validation/test datasets for modelling.
-
-Every model in this project must load the files produced here so that
-all group members train and evaluate on identical data.
-
-Target: operation_length_mins (how long the operation actually took).
-Features: only information known BEFORE the operation starts.
-"""
+"""Builds the train, validation and test splits so every model runs on the same data."""
 
 from pathlib import Path
 

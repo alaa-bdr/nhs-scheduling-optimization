@@ -1,8 +1,4 @@
-"""XGBoost regression for operation duration prediction.
-
-Uses cross-validation and grid search to find the best hyperparameters,
-then evaluates on the validation set against the hospital baseline.
-"""
+"""XGBoost with grid search and cross validation."""
 
 from pathlib import Path
 

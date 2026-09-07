@@ -1,14 +1,4 @@
-"""Improved feature preparation for the v2 modelling round.
-
-Adds three things beyond the v1 feature set:
-1. Out of fold target encoding for high cardinality columns such as
-   procedure code and surgeon, computed without leaking the target.
-2. A stated duration parsed from the free text theatre notes, which
-   clinicians often record explicitly as "90 mins" or "Duration = 240".
-3. Simple text volume features from the notes.
-
-All features remain preoperative. Nothing here uses intraoperative timing.
-"""
+"""Adds historical averages per procedure and surgeon, and pulls the stated duration out of the theatre notes."""
 
 from __future__ import annotations
 

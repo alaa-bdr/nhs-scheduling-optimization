@@ -1,9 +1,4 @@
-"""Error analysis for the best model (SVR) on the test set.
-
-Shows where predictions are strong and where they break down, broken
-out by operation length, specialty, admission type, and anaesthetic.
-This identifies the model's limitations for the discussion section.
-"""
+"""Breaks the error down by case length, specialty, admission type and anaesthetic to show where the model struggles."""
 
 from pathlib import Path
 

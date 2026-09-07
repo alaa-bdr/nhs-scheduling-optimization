@@ -1,8 +1,4 @@
-"""Tuned XGBoost on the v2 feature set, evaluated on a held out test set.
-
-Uses a wider randomised hyperparameter search than the v1 round, with
-5 fold cross validation chosen on the evidence from kfold_comparison.
-"""
+"""Wider hyperparameter search on the improved feature set."""
 
 from __future__ import annotations
 

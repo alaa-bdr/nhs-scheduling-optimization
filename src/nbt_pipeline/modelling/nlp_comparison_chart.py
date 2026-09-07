@@ -1,10 +1,4 @@
-"""Add the NLP model to a comparison chart alongside the structured models.
-
-The NLP model predicts from the free-text theatre notes rather than the
-structured columns, so it is shown here with a clear note explaining that
-it uses a different type of input. All values are test set style estimates
-for a like for like visual summary.
-"""
+"""Puts all five models on one chart, with a note that the NLP model uses text rather than the structured fields."""
 
 from pathlib import Path
 

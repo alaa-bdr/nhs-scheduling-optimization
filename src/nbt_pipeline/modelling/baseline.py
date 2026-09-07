@@ -1,9 +1,4 @@
-"""Baseline benchmarks for operation duration prediction.
-
-Two reference points that every later model must beat:
-1. The hospital's own planned duration, used as if it were a prediction.
-2. A linear regression on the numeric pre-operative features.
-"""
+"""Measures how far off the hospital's own planned times are, as a benchmark to beat."""
 
 from pathlib import Path
 

@@ -1,4 +1,4 @@
-"""Descriptive analysis of procedure frequency and operator variation."""
+"""Looks at which procedures are most common and how much planning error varies between surgeons."""
 
 from pathlib import Path
 import warnings

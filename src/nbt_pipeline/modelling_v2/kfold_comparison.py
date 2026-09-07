@@ -1,10 +1,4 @@
-"""Compare cross validation fold counts to find the optimal number.
-
-Dr Aydin asked which fold count performs best on roughly 15,000 rows.
-Too few folds gives a noisy estimate, too many is slow and leaves each
-fold small. This script tests 3, 5, 7 and 9 folds on the same model and
-data, and reports both the mean score and the variability across folds.
-"""
+"""Tests 3, 5, 7 and 9 folds to find which number works best on this dataset."""
 
 from __future__ import annotations
 

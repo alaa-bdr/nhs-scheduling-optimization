@@ -1,9 +1,4 @@
-"""Statistical significance testing between the leading models.
-
-Point estimates cannot show whether one model genuinely beats another.
-This compares per case absolute errors on identical test rows using
-paired Wilcoxon signed rank tests.
-"""
+"""Checks whether the gaps between models are real or just noise."""
 
 from pathlib import Path
 from itertools import combinations

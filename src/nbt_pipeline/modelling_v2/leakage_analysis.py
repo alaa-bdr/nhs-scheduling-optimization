@@ -1,14 +1,4 @@
-"""Quantify how much apparent R2 depends on the prediction horizon.
-
-The same dataset supports very different reported accuracy depending on
-which fields are admitted as predictors. This script measures that
-explicitly by fitting the same model under four horizons, from strictly
-preoperative through to fields only knowable after the operation.
-
-The purpose is to establish what R2 is achievable honestly, and to show
-how easily a much higher figure can be produced by admitting fields that
-would not exist when a theatre list is built.
-"""
+"""Shows how much the reported score depends on which fields are allowed as predictors."""
 
 from __future__ import annotations
 
