@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Supervisor Q&amp;A summary</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Supervisor Q&amp;A summary</h1>
+</header>
+<h1
+id="supervisor-qa-summary-nhs-theatre-scheduling-modelling">Supervisor
+Q&amp;A summary: NHS theatre scheduling modelling</h1>
+<p>This document summarises the main questions we asked during the
+project, the method we used to answer them, where the evidence is shown,
+and the result.</p>
+<p>Project branch: <code>improve-operation-length-r2</code></p>
+<p>Main notebook for modelling results:
+<code>notebooks/nbt_operation_length_regression.ipynb</code></p>
+<hr />
+<h2 id="what-were-we-trying-to-predict">1. What were we trying to
+predict?</h2>
+<p>We worked with three prediction targets.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Target</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>meaningful_overrun_flag</code></td>
+<td>Classification</td>
+<td>Will the operation meaningfully overrun?</td>
+</tr>
+<tr>
+<td><code>operation_length_mins</code></td>
+<td>Regression</td>
+<td>How many minutes will the operation take?</td>
+</tr>
+<tr>
+<td><code>duration_error_mins</code></td>
+<td>Regression</td>
+<td>How many minutes longer or shorter than planned will the operation
+be?</td>
+</tr>
+</tbody>
+</table>
+<p>The main supervisor discussion focused on
+<code>operation_length_mins</code>.</p>
+<hr />
+<h2 id="what-rule-defined-overrun-and-underrun">2. What rule defined
+overrun and underrun?</h2>
+<p>First we calculate the difference between actual and planned
+duration:</p>
+<pre class="text"><code>duration_error_mins = operation_length_mins - ExpectedDurationMins</code></pre>
+<p>Then we define the tolerance:</p>
+<pre class="text"><code>duration_tolerance_mins = max(0.10 × ExpectedDurationMins, 10 minutes)</code></pre>
+<p>Then:</p>
+<pre class="text"><code>If duration_error_mins &gt; duration_tolerance_mins → overrun
+If duration_error_mins &lt; -duration_tolerance_mins → underrun
+Otherwise → within_tolerance</code></pre>
+<p>Simple meaning: we only call something an overrun or underrun if the
+difference is bigger than the allowed tolerance.</p>
+<p>Evidence location:
+<code>src/nbt_pipeline/preprocessing/features.py</code> and statistical
+notebook target-definition section.</p>
+<hr />
+<h2 id="what-cleaning-did-we-do">3. What cleaning did we do?</h2>
+<p>We created one cleaned analysis dataset:</p>
+<pre class="text"><code>result/nbt_smallset_analysis.xlsx</code></pre>
+<p>Final shape:</p>
+<pre class="text"><code>14,911 rows
+22 columns</code></pre>
+<p>Main cleaning actions:</p>
+<ul>
+<li>Removed 7 exact duplicate rows.</li>
+<li>Removed free-text fields such as theatre notes.</li>
+<li>Removed staff/consultant identifiers from the primary model because
+of governance, privacy, high-cardinality and overfitting concerns.</li>
+<li>Removed raw timestamps and reconstructed stage-duration columns from
+the primary predictors to avoid leakage and unvalidated timing
+assumptions.</li>
+<li>Kept <code>operation_start_hour</code> only as a
+provisional/sensitivity feature.</li>
+<li>Removed duplicate/superseded outcome columns.</li>
+</ul>
+<p>Evidence location:
+<code>notebooks/nbt_smallset_data_cleaning.ipynb</code>.</p>
+<hr />
+<h2 id="how-did-we-handle-missing-values">4. How did we handle missing
+values?</h2>
+<p>Technique name:</p>
+<pre class="text"><code>Missing-aware preprocessing pipeline</code></pre>
+<p>For categorical variables:</p>
+<pre class="text"><code>Missing → &quot;Missing/not recorded&quot;</code></pre>
+<p>For numeric variables:</p>
+<pre class="text"><code>Median imputation + missingness indicator</code></pre>
+<p>For example, if age is missing, the pipeline fills it using the
+training-fold median and also adds a flag saying age was originally
+missing.</p>
+<p>Important exception:</p>
+<pre class="text"><code>ExpectedDurationMins was required and not imputed.</code></pre>
+<p>Why? Because it is the hospital planned duration. If it is missing,
+replacing it with a median would not have a real scheduling meaning.</p>
+<p>Evidence location: modelling notebooks, Section 1 and Section 5.</p>
+<hr />
+<h2 id="did-we-normalisescale-the-data">5. Did we normalise/scale the
+data?</h2>
+<p>Yes. Numeric predictors were scaled using:</p>
+<pre class="text"><code>StandardScaler</code></pre>
+<p>Formula:</p>
+<pre class="text"><code>scaled value = (value - mean) / standard deviation</code></pre>
+<p>This was done inside the model pipeline, not manually on the whole
+dataset.</p>
+<p>Correct order:</p>
+<pre class="text"><code>1. Split data
+2. Fit imputation/encoding/scaling only on training folds
+3. Validate model
+4. Test once on untouched test set</code></pre>
+<p>Why? This avoids data leakage.</p>
+<p>Evidence location: modelling notebooks, Section 1.</p>
+<hr />
+<h2 id="how-did-we-encode-categorical-variables">6. How did we encode
+categorical variables?</h2>
+<p>Categorical variables were encoded using:</p>
+<pre class="text"><code>OneHotEncoder(handle_unknown=&quot;ignore&quot;, min_frequency=10)</code></pre>
+<p>This means:</p>
+<ul>
+<li>Categories are converted into model-readable columns.</li>
+<li>Unknown categories in validation/test do not crash the model.</li>
+<li>Very rare categories are handled more safely.</li>
+</ul>
+<p>Evidence location:
+<code>src/nbt_pipeline/modeling/experiments.py</code>.</p>
+<hr />
+<h2 id="why-did-we-use-groupkfold">7. Why did we use GroupKFold?</h2>
+<p>We used GroupKFold because normal KFold can make the model look too
+good if very similar operation profiles appear in both training and
+validation.</p>
+<p>Simple explanation:</p>
+<pre class="text"><code>Normal KFold splits rows.
+GroupKFold splits groups.</code></pre>
+<p>If a group appears in validation, the same group cannot appear in
+training.</p>
+<p>This gives a stricter and more honest validation score.</p>
+<p>We tested three fold numbers:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">GroupKFold value</th>
+<th style="text-align: right;">CV MAE</th>
+<th style="text-align: right;">CV R²</th>
+<th style="text-align: right;">Test R²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">3 folds</td>
+<td style="text-align: right;">29.93</td>
+<td style="text-align: right;">0.701</td>
+<td style="text-align: right;">0.732</td>
+</tr>
+<tr>
+<td style="text-align: right;">5 folds</td>
+<td style="text-align: right;">29.61</td>
+<td style="text-align: right;">0.703</td>
+<td style="text-align: right;">0.732</td>
+</tr>
+<tr>
+<td style="text-align: right;">10 folds</td>
+<td style="text-align: right;">29.47</td>
+<td style="text-align: right;">0.707</td>
+<td style="text-align: right;">0.732</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: validation was stable across fold choices. The test score
+did not depend on one arbitrary fold number.</p>
+<p>Evidence location:
+<code>result/modeling/operation_length_mins/r2_experiments/kfold_number_experiments.csv</code>
+and operation-length notebook Section 12.2.</p>
+<hr />
+<h2 id="which-models-did-we-benchmark">8. Which models did we
+benchmark?</h2>
+<p>For <code>operation_length_mins</code>, we compared:</p>
+<ul>
+<li>Dummy median benchmark</li>
+<li>Linear regression</li>
+<li>Decision tree</li>
+<li>Random forest</li>
+<li>SVR</li>
+<li>XGBoost</li>
+<li>Neural network</li>
+<li>CatBoost as an extra later check</li>
+</ul>
+<p>Main benchmark results:</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th style="text-align: right;">CV MAE</th>
+<th style="text-align: right;">CV R²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XGBoost</td>
+<td style="text-align: right;">30.75</td>
+<td style="text-align: right;">0.683</td>
+</tr>
+<tr>
+<td>Neural network</td>
+<td style="text-align: right;">30.94</td>
+<td style="text-align: right;">0.670</td>
+</tr>
+<tr>
+<td>Random forest</td>
+<td style="text-align: right;">30.99</td>
+<td style="text-align: right;">0.666</td>
+</tr>
+<tr>
+<td>Linear regression</td>
+<td style="text-align: right;">32.12</td>
+<td style="text-align: right;">0.657</td>
+</tr>
+<tr>
+<td>Decision tree</td>
+<td style="text-align: right;">33.60</td>
+<td style="text-align: right;">0.618</td>
+</tr>
+<tr>
+<td>SVR</td>
+<td style="text-align: right;">31.22</td>
+<td style="text-align: right;">0.617</td>
+</tr>
+<tr>
+<td>Dummy median benchmark</td>
+<td style="text-align: right;">58.07</td>
+<td style="text-align: right;">-0.089</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: XGBoost was the best main benchmark model.</p>
+<p>Evidence location: operation-length notebook Section 7 and
+<code>result/modeling/operation_length_mins/algorithm_comparison.csv</code>.</p>
+<hr />
+<h2 id="what-were-the-operational-benchmarks">9. What were the
+operational benchmarks?</h2>
+<p>We compared the model against simple baselines.</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th style="text-align: right;">Test MAE</th>
+<th style="text-align: right;">Test R²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dummy median</td>
+<td style="text-align: right;">59.98</td>
+<td style="text-align: right;">-0.106</td>
+</tr>
+<tr>
+<td>Hospital <code>ExpectedDurationMins</code> alone</td>
+<td style="text-align: right;">43.78</td>
+<td style="text-align: right;">0.476</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: the model was much better than the dummy benchmark and
+better than using the hospital planned duration alone.</p>
+<p>Evidence location: operation-length notebook Section 10 and
+<code>result/modeling/operation_length_mins/operational_benchmarks.csv</code>.</p>
+<hr />
+<h2 id="should-we-remove-expecteddurationmins">10. Should we remove
+ExpectedDurationMins?</h2>
+<p>We tested this because the supervisor suggested it might improve
+performance.</p>
+<p>Result:</p>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th style="text-align: right;">Validation R²</th>
+<th style="text-align: right;">Test R²</th>
+<th style="text-align: right;">Test MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>With <code>ExpectedDurationMins</code></td>
+<td style="text-align: right;">0.676</td>
+<td style="text-align: right;">0.716</td>
+<td style="text-align: right;">30.89 min</td>
+</tr>
+<tr>
+<td>Without <code>ExpectedDurationMins</code></td>
+<td style="text-align: right;">0.584</td>
+<td style="text-align: right;">0.646</td>
+<td style="text-align: right;">33.65 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion:</p>
+<pre class="text"><code>Removing ExpectedDurationMins made the model worse.</code></pre>
+<p>Reason: <code>ExpectedDurationMins</code> is the hospital’s planned
+estimate of operation length. It is available before the operation and
+gives the model a strong starting point.</p>
+<p>Evidence location: operation-length notebook Section 12.1.</p>
+<p>Clickable plots in notebook:</p>
+<ul>
+<li>Click here to open the validation/test plot.</li>
+<li>Click here to open the learning / early-stopping plot.</li>
+</ul>
+<hr />
+<h2 id="did-we-use-early-stopping">11. Did we use early stopping?</h2>
+<p>Yes. In the improved experiments, we used early stopping with
+XGBoost.</p>
+<p>Simple meaning:</p>
+<pre class="text"><code>The model keeps learning while validation error improves.
+When validation error stops improving, training stops.</code></pre>
+<p>Why? To reduce overfitting.</p>
+<p>Evidence location: operation-length notebook Section 12.1 and
+<code>early_stopping_validation_curve.png</code>.</p>
+<hr />
+<h2 id="did-we-treat-skewed-operation-times">12. Did we treat skewed
+operation times?</h2>
+<p>Yes. We tested:</p>
+<pre class="text"><code>raw operation_length_mins
+log1p(operation_length_mins)</code></pre>
+<p>The log-transformed target helped MAE in the early-stopping
+experiment.</p>
+<p>Best supplementary result:</p>
+<pre class="text"><code>XGBoost + log target + early stopping
+Test R² ≈ 0.725
+Test MAE ≈ 28.93 minutes</code></pre>
+<p>Conclusion: log target was useful as a supplementary improvement
+check, but it did not push R² above 0.78.</p>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>catboost_operation_length_experiments.csv</code>.</p>
+<hr />
+<h2 id="did-starting-time-help">13. Did starting time help?</h2>
+<p>Yes, slightly.</p>
+<p>Trimmed model result:</p>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th style="text-align: right;">Test R²</th>
+<th style="text-align: right;">Test MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>With <code>operation_start_hour</code></td>
+<td style="text-align: right;">0.721</td>
+<td style="text-align: right;">29.03 min</td>
+</tr>
+<tr>
+<td>Without <code>operation_start_hour</code></td>
+<td style="text-align: right;">0.712</td>
+<td style="text-align: right;">29.09 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion:</p>
+<pre class="text"><code>operation_start_hour improves R² slightly.</code></pre>
+<p>But it remains provisional because the reconstructed timestamp has
+not been independently validated.</p>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>trimmed_columns_start_hour_impact.csv</code>.</p>
+<hr />
+<h2 id="did-consultant-improve-the-model">14. Did consultant improve the
+model?</h2>
+<p>We tested:</p>
+<ul>
+<li><code>session_consultant</code></li>
+<li><code>listing_cons_code</code></li>
+<li>both together</li>
+</ul>
+<p>Result:</p>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th style="text-align: right;">Test R²</th>
+<th style="text-align: right;">MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Best setup without consultant</td>
+<td style="text-align: right;">0.7319</td>
+<td style="text-align: right;">29.63 min</td>
+</tr>
+<tr>
+<td>Best + <code>session_consultant</code></td>
+<td style="text-align: right;">0.7323</td>
+<td style="text-align: right;">29.58 min</td>
+</tr>
+<tr>
+<td>Best + <code>listing_cons_code</code></td>
+<td style="text-align: right;">0.7313</td>
+<td style="text-align: right;">29.53 min</td>
+</tr>
+<tr>
+<td>Best + both consultant fields</td>
+<td style="text-align: right;">0.7246</td>
+<td style="text-align: right;">29.85 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: consultant did not materially improve performance and
+should not be used in the final primary model.</p>
+<p>Reason: consultant fields are high-cardinality and
+governance-sensitive.</p>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>consultant_sensitivity_experiments.csv</code>.</p>
+<hr />
+<h2 id="did-full-surgery-code-improve-the-model">15. Did full surgery
+code improve the model?</h2>
+<p>We tested <code>actual_proc_1_procedure_code</code>.</p>
+<p>Result:</p>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th style="text-align: right;">Test R²</th>
+<th style="text-align: right;">MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Best setup: group + category</td>
+<td style="text-align: right;">0.7319</td>
+<td style="text-align: right;">29.63 min</td>
+</tr>
+<tr>
+<td>Best + full procedure code</td>
+<td style="text-align: right;">0.7326</td>
+<td style="text-align: right;">29.45 min</td>
+</tr>
+<tr>
+<td>Only full code, no group/category</td>
+<td style="text-align: right;">0.7158</td>
+<td style="text-align: right;">30.31 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: full surgery code gave only a tiny improvement when
+added, and performed worse when replacing grouped procedure
+variables.</p>
+<p>Reason: the full code has many rare categories.</p>
+<p>Audit:</p>
+<pre class="text"><code>1030 unique full procedure codes</code></pre>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>full_procedure_code_sensitivity_experiments.csv</code>.</p>
+<hr />
+<h2 id="what-is-actual_proc_1_procedure_code_min20">16. What is
+actual_proc_1_procedure_code_min20?</h2>
+<p>It is a safer version of the full surgery code.</p>
+<p>Rule:</p>
+<pre class="text"><code>If a full procedure code appears at least 20 times, keep it.
+If it appears fewer than 20 times, replace it with &quot;Rare procedure code&quot;.</code></pre>
+<p>This reduces overfitting from very rare codes.</p>
+<p>We later tested trimming it.</p>
+<table>
+<thead>
+<tr>
+<th>Experiment</th>
+<th style="text-align: right;">Test R²</th>
+<th style="text-align: right;">Test MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>With <code>actual_proc_1_procedure_code_min20</code></td>
+<td style="text-align: right;">0.725</td>
+<td style="text-align: right;">28.93 min</td>
+</tr>
+<tr>
+<td>Without it</td>
+<td style="text-align: right;">0.721</td>
+<td style="text-align: right;">29.03 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: removing it causes only a very small drop, so it can be
+removed for a simpler model.</p>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>trim_full_code_min20_experiment.csv</code>.</p>
+<hr />
+<h2 id="did-procedure-chapter-help">17. Did procedure chapter help?</h2>
+<p>Procedure chapter means the first letter of the procedure code.</p>
+<p>Example:</p>
+<pre class="text"><code>S065 → S</code></pre>
+<p>Result:</p>
+<table>
+<thead>
+<tr>
+<th>Procedure representation</th>
+<th style="text-align: right;">Test R²</th>
+<th style="text-align: right;">MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>group + category</td>
+<td style="text-align: right;">0.732</td>
+<td style="text-align: right;">29.51 min</td>
+</tr>
+<tr>
+<td>category only</td>
+<td style="text-align: right;">0.729</td>
+<td style="text-align: right;">30.00 min</td>
+</tr>
+<tr>
+<td>group only</td>
+<td style="text-align: right;">0.721</td>
+<td style="text-align: right;">29.96 min</td>
+</tr>
+<tr>
+<td>chapter only</td>
+<td style="text-align: right;">0.690</td>
+<td style="text-align: right;">31.23 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: chapter only was too broad and performed worse.</p>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>procedure_chapter_sensitivity_experiments.csv</code>.</p>
+<hr />
+<h2 id="did-neural-network-improve-performance">18. Did neural network
+improve performance?</h2>
+<p>We tested neural networks with two and three hidden layers.</p>
+<table>
+<thead>
+<tr>
+<th>Neural network</th>
+<th style="text-align: right;">Test R²</th>
+<th style="text-align: right;">Test MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 hidden layers: 128-64</td>
+<td style="text-align: right;">0.712</td>
+<td style="text-align: right;">30.76 min</td>
+</tr>
+<tr>
+<td>3 hidden layers: 128-64-32</td>
+<td style="text-align: right;">0.716</td>
+<td style="text-align: right;">30.46 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: neural network did not beat XGBoost.</p>
+<p>Reason: this is tabular hospital data with many categorical
+variables, and tree-boosting models usually work better for this type of
+dataset.</p>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>neural_network_no_priority_best_columns.csv</code>.</p>
+<hr />
+<h2 id="did-catboost-improve-performance">19. Did CatBoost improve
+performance?</h2>
+<p>We tested CatBoost because it is strong with categorical/tabular
+data.</p>
+<p>Result:</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Target</th>
+<th style="text-align: right;">Test R²</th>
+<th style="text-align: right;">Test MAE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XGBoost early stopping</td>
+<td>log target</td>
+<td style="text-align: right;">0.725</td>
+<td style="text-align: right;">28.93 min</td>
+</tr>
+<tr>
+<td>CatBoost deeper</td>
+<td>raw minutes</td>
+<td style="text-align: right;">0.723</td>
+<td style="text-align: right;">30.36 min</td>
+</tr>
+<tr>
+<td>CatBoost default tuned</td>
+<td>log target</td>
+<td style="text-align: right;">0.721</td>
+<td style="text-align: right;">28.89 min</td>
+</tr>
+<tr>
+<td>XGBoost early stopping</td>
+<td>raw minutes</td>
+<td style="text-align: right;">0.715</td>
+<td style="text-align: right;">31.12 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: CatBoost was competitive but did not beat the best
+XGBoost setup.</p>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>catboost_operation_length_experiments.csv</code>.</p>
+<hr />
+<h2 id="which-features-were-most-important">20. Which features were most
+important?</h2>
+<p>We used permutation importance.</p>
+<p>Simple meaning:</p>
+<pre class="text"><code>Shuffle one column and see how much worse the model gets.</code></pre>
+<p>Top features:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Rank</th>
+<th>Feature</th>
+<th style="text-align: right;">MAE gets worse by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>ExpectedDurationMins</code></td>
+<td style="text-align: right;">+25.84 min</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>anaesthetic_desc</code></td>
+<td style="text-align: right;">+4.11 min</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>procedure_code_group</code></td>
+<td style="text-align: right;">+3.57 min</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>intended_management_label</code></td>
+<td style="text-align: right;">+3.53 min</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>procedure_code_category</code></td>
+<td style="text-align: right;">+2.16 min</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusion: planned duration, anaesthetic type and procedure type
+were the strongest predictors.</p>
+<p>Evidence location: operation-length notebook Section 12.2 and
+<code>latest_best_feature_importance.csv</code>.</p>
+<hr />
+<h2 id="what-are-the-best-columns-for-operation_length_mins">21. What
+are the best columns for operation_length_mins?</h2>
+<p>Recommended clean practical column set:</p>
+<pre class="text"><code>ExpectedDurationMins
+sex_national_code
+age_at_operation
+ASAScore
+anaesthetic_desc
+admission_type_label
+intended_management_label
+procedure_code_group
+procedure_code_category
+operation_start_hour
+TheatreRoom
+session_specialty</code></pre>
+<p>Optional sensitivity-only column:</p>
+<pre class="text"><code>actual_proc_1_procedure_code_min20</code></pre>
+<p>Not recommended for final primary model:</p>
+<pre class="text"><code>priority_level_label
+session_consultant
+listing_cons_code
+raw actual_proc_1_procedure_code
+procedure_code_chapter only
+operation end time
+duration_error_mins
+duration_status
+meaningful_overrun_flag
+stage duration columns</code></pre>
+<hr />
+<h2 id="what-was-the-best-score">22. What was the best score?</h2>
+<p>Main official benchmark result from the regenerated modelling
+notebook:</p>
+<pre class="text"><code>operation_length_mins
+XGBoost
+Test MAE ≈ 30.45 minutes
+Test R² ≈ 0.712</code></pre>
+<p>Supplementary improvement checks found stronger practical variants
+around:</p>
+<pre class="text"><code>R² ≈ 0.72–0.73
+MAE ≈ 29 minutes</code></pre>
+<p>Highest earlier R² sensitivity result:</p>
+<pre class="text"><code>R² ≈ 0.732</code></pre>
+<p>Best early-stopping/log-target result:</p>
+<pre class="text"><code>R² ≈ 0.725
+MAE ≈ 28.93 minutes</code></pre>
+<hr />
+<h2 id="why-did-we-not-reach-r²-0.78">23. Why did we not reach R² &gt;
+0.78?</h2>
+<p>We tried many reasonable model and feature options, but performance
+plateaued around 0.72–0.73.</p>
+<p>This suggests the limit is probably missing information, not only the
+algorithm.</p>
+<p>Useful missing data may include:</p>
+<ul>
+<li>case complexity indicators;</li>
+<li>all secondary procedure codes;</li>
+<li>case order within theatre list;</li>
+<li>staffed session start/end time;</li>
+<li>cancellation and delay reasons;</li>
+<li>equipment or bed delays;</li>
+<li>validated theatre-flow timestamps;</li>
+<li>governed team/session-level information.</li>
+</ul>
+<p>Supervisor explanation:</p>
+<pre class="text"><code>The model is useful but not perfect. To reach higher accuracy, the dataset likely needs richer operational and case-complexity variables.</code></pre>
+<hr />
+<h2 id="final-presentation-message">24. Final presentation message</h2>
+<p>The project followed a strong modelling process:</p>
+<ol type="1">
+<li>Cleaned the data and removed leakage.</li>
+<li>Defined clear targets.</li>
+<li>Used missing-aware preprocessing.</li>
+<li>Encoded and scaled data inside training folds.</li>
+<li>Used grouped validation to avoid overly optimistic scores.</li>
+<li>Compared multiple models against benchmarks.</li>
+<li>Tested supervisor questions with evidence.</li>
+<li>Added plots for validation/test comparison and early stopping.</li>
+<li>Explained why the model score plateaued.</li>
+</ol>
+<p>Final statement:</p>
+<pre class="text"><code>XGBoost was the strongest overall model for operation length. ExpectedDurationMins, anaesthetic type and procedure type were the most important predictors. Removing ExpectedDurationMins reduced performance. Consultant, procedure chapter and neural networks did not improve the model enough to justify using them. The best honest performance remained around R² 0.72–0.73, suggesting that further improvement requires richer operational and case-complexity data.</code></pre>
+</body>
+</html>
