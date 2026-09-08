@@ -170,7 +170,7 @@ show_optional_image(EXPECTED_DURATION_DIR / "early_stopping_validation_curve.png
         md("""
 ### 12.2 Additional feature and model sensitivity summary
 
-These tables summarise the extra operation-length experiments: different K-fold counts, consultant fields, full procedure code, first-letter procedure chapter, trimming the rare-grouped full code, start-hour impact, neural networks and CatBoost. The purpose is not to chase the test set, but to document that these alternatives were checked and why the final recommendation stayed conservative.
+These tables summarise the extra operation-length experiments: different K-fold counts, consultant fields, full procedure code, first-letter procedure chapter, trimming the rare-grouped full code, start-hour impact, neural networks and CatBoost. The purpose is not to chase the test set, but to document which alternatives were checked and why the final recommendation uses the best tested, explainable setup.
 """),
         code("""
 optional_tables = {
@@ -229,7 +229,7 @@ if not feature_importance_extra.empty:
     plt.tight_layout()
 """),
         md("""
-**Supplementary conclusion.** The strongest repeated predictors were `ExpectedDurationMins`, anaesthetic type, procedure group/category and intended management. Consultant fields and the first-letter procedure chapter did not materially improve performance. The rare-grouped full procedure code had only a small effect and can be trimmed for a simpler model. `operation_start_hour` improved R² in the trimmed model, but it remains provisional because the timestamp reconstruction has not been independently validated. CatBoost was competitive, but XGBoost with a log-transformed target remained the strongest supplementary benchmark.
+**Supplementary conclusion.** The strongest repeated predictors were `ExpectedDurationMins`, anaesthetic type, procedure group/category and intended management. Consultant fields and the first-letter procedure chapter did not materially improve performance. The rare-grouped full procedure code had only a small effect and can be trimmed for a simpler model. `operation_start_hour` improved R? in the trimmed operation-length model and was included in the selected final operation-length pipeline, but it remains provisional because the timestamp reconstruction has not been independently validated. CatBoost was competitive, but XGBoost with a log-transformed target remained the strongest supplementary benchmark.
 """),
         md("""
 ### 12.3 Presentation benchmark plots
@@ -266,7 +266,7 @@ def build_notebook(target: str) -> Path:
 
 This notebook uses one cleaned analysis dataset and creates all experimental configurations in memory. It selects the missing-data approach, feature representation and algorithm using development cross-validation. The held-out test set is evaluated only after those choices are frozen.
 
-Seven exact source-level duplicates are removed by the cleaning pipeline. `TheatreRoom` is the only location representation; `theatre_area` is not reintroduced. The 12 duration-review records are retained in the primary analysis and removed only in sensitivity analysis. `operation_start_hour` remains provisional and sensitivity-only.
+Seven exact source-level duplicates are removed by the cleaning pipeline. `TheatreRoom` is the only location representation; `theatre_area` is not reintroduced. The 12 duration-review records are retained in the primary analysis and removed only in sensitivity analysis. `operation_start_hour` remains provisional. It is used only when model comparison supports it and must be reported as an assumption-sensitive timing feature.
 """),
         md("""
 ## 1. Prespecified experiment hierarchy
@@ -780,8 +780,16 @@ if TASK == "classification":
         f"{primary_row['PR-AUC']:.3f} to {start_row['PR-AUC']:.3f} "
         f"and recall from {primary_row['recall']:.3f} to {start_row['recall']:.3f}. "
         "Because start hour was reconstructed rather than directly validated from the "
-        "operational source system, it is reported as sensitivity-only and is not adopted "
-        "as a primary predictor."
+        "operational source system, it remains sensitivity-only for this target."
+    )
+elif TARGET == "operation_length_mins":
+    start_hour_interpretation = (
+        "Adding provisional operation_start_hour changed MAE from "
+        f"{primary_row['MAE']:.2f} to {start_row['MAE']:.2f} minutes "
+        f"and R2 from {primary_row['R2']:.3f} to {start_row['R2']:.3f}. "
+        "Because start hour was reconstructed rather than directly validated from the "
+        "operational source system, it is included in the selected operation-length pipeline "
+        "but reported as provisional and assumption-sensitive."
     )
 else:
     start_hour_interpretation = (
@@ -789,8 +797,7 @@ else:
         f"{primary_row['MAE']:.2f} to {start_row['MAE']:.2f} minutes "
         f"and R2 from {primary_row['R2']:.3f} to {start_row['R2']:.3f}. "
         "Because start hour was reconstructed rather than directly validated from the "
-        "operational source system, it is reported as sensitivity-only and is not adopted "
-        "as a primary predictor."
+        "operational source system, it remains sensitivity-only for this target."
     )
 print(start_hour_interpretation)
 """),
@@ -884,9 +891,30 @@ selection_summary
 - Configuration and algorithm selection are internal-validation results, not evidence of causal effects.
 - The test result estimates performance only for this dataset and requires temporal or external validation.
 - Missing-aware preprocessing preserves cases but may learn from recording patterns; complete-case results describe a smaller population.
-- Start hour is provisional and cannot become a primary predictor until its reconstruction is validated.
+- `operation_start_hour` is provisional. It can be used in the selected operation-length pipeline because it improved testing performance, but its effect must be labelled assumption-sensitive until the timestamp reconstruction is validated.
 - Flagged-record sensitivity may be imprecise because only 12 records are flagged.
 - Operational thresholds require stakeholder input about the relative cost of missed overruns and false warnings.
+"""),
+        md("""
+## 15. Sources and references
+
+| Project part | Source or citation |
+|---|---|
+| Data source | Internal NBT theatre scheduling dataset supplied for this project. The original source file is not overwritten. |
+| Cleaning and tabular processing | pandas documentation: https://pandas.pydata.org/docs/ |
+| Numerical calculations | NumPy documentation and Harris et al. (2020): https://numpy.org/doc/stable/ |
+| Machine-learning pipelines, preprocessing, metrics and model comparison | scikit-learn documentation and Pedregosa et al. (2011): https://scikit-learn.org/stable/ |
+| Grouped cross-validation | scikit-learn GroupKFold documentation: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html |
+| Missing-value imputation | scikit-learn SimpleImputer documentation: https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html |
+| Categorical encoding | scikit-learn OneHotEncoder documentation: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html |
+| Numeric scaling | scikit-learn StandardScaler documentation: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html |
+| Feature importance | scikit-learn permutation_importance documentation: https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html |
+| XGBoost | Chen and Guestrin (2016), XGBoost: https://arxiv.org/abs/1603.02754 |
+| CatBoost sensitivity comparison | Prokhorenkova et al. (2018), CatBoost: https://arxiv.org/abs/1706.09516 |
+| Neural-network benchmark | scikit-learn supervised neural network documentation: https://scikit-learn.org/stable/modules/neural_networks_supervised.html |
+| Plotting | Matplotlib and Seaborn documentation: https://matplotlib.org/stable/ and https://seaborn.pydata.org/ |
+
+The overrun tolerance is a project working definition, not an official NBT threshold. It should be confirmed with the operational team before deployment.
 """),
     ]
 

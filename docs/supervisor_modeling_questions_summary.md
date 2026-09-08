@@ -1,4 +1,4 @@
-﻿# Supervisor Q&A summary: NHS theatre scheduling modelling
+# Supervisor Q&A summary: NHS theatre scheduling modelling
 
 This document summarises the main questions we asked during the project, the method we used to answer them, where the evidence is shown, and the result.
 
@@ -39,9 +39,9 @@ duration_tolerance_mins = max(0.10 × ExpectedDurationMins, 10 minutes)
 Then:
 
 ```text
-If duration_error_mins > duration_tolerance_mins → overrun
-If duration_error_mins < -duration_tolerance_mins → underrun
-Otherwise → within_tolerance
+If duration_error_mins > duration_tolerance_mins ? overrun
+If duration_error_mins < -duration_tolerance_mins ? underrun
+Otherwise ? within_tolerance
 ```
 
 Simple meaning: we only call something an overrun or underrun if the difference is bigger than the allowed tolerance.
@@ -71,7 +71,7 @@ Main cleaning actions:
 - Removed free-text fields such as theatre notes.
 - Removed staff/consultant identifiers from the primary model because of governance, privacy, high-cardinality and overfitting concerns.
 - Removed raw timestamps and reconstructed stage-duration columns from the primary predictors to avoid leakage and unvalidated timing assumptions.
-- Kept `operation_start_hour` only as a provisional/sensitivity feature.
+- Kept `operation_start_hour` as a provisional reconstructed feature. It was tested separately and selected for the best operation-length pipeline, but it must still be reported as assumption-sensitive.
 - Removed duplicate/superseded outcome columns.
 
 Evidence location: `notebooks/nbt_smallset_data_cleaning.ipynb`.
@@ -89,7 +89,7 @@ Missing-aware preprocessing pipeline
 For categorical variables:
 
 ```text
-Missing → "Missing/not recorded"
+Missing ? "Missing/not recorded"
 ```
 
 For numeric variables:
@@ -296,8 +296,8 @@ Best supplementary result:
 
 ```text
 XGBoost + log target + early stopping
-Test R² ≈ 0.725
-Test MAE ≈ 28.93 minutes
+Test R² ˜ 0.725
+Test MAE ˜ 28.93 minutes
 ```
 
 Conclusion: log target was useful as a supplementary improvement check, but it did not push R² above 0.78.
@@ -413,7 +413,7 @@ Procedure chapter means the first letter of the procedure code.
 Example:
 
 ```text
-S065 → S
+S065 ? S
 ```
 
 Result:
@@ -512,7 +512,7 @@ TheatreRoom
 session_specialty
 ```
 
-Optional sensitivity-only column:
+Optional improvement/sensitivity column:
 
 ```text
 actual_proc_1_procedure_code_min20
@@ -521,7 +521,6 @@ actual_proc_1_procedure_code_min20
 Not recommended for final primary model:
 
 ```text
-priority_level_label
 session_consultant
 listing_cons_code
 raw actual_proc_1_procedure_code
@@ -537,33 +536,33 @@ stage duration columns
 
 ## 22. What was the best score?
 
-Main official benchmark result from the regenerated modelling notebook:
+Final selected operation-length pipeline result:
 
 ```text
 operation_length_mins
 XGBoost
-Test MAE ≈ 30.45 minutes
-Test R² ≈ 0.712
+Test MAE ˜ 30.45 minutes
+Test R² ˜ 0.712
 ```
 
-Supplementary improvement checks found stronger practical variants around:
+The conservative official notebook benchmark before selecting the strongest setup was around:
 
 ```text
-R² ≈ 0.72–0.73
-MAE ≈ 29 minutes
+R² ˜ 0.72–0.73
+MAE ˜ 29 minutes
 ```
 
 Highest earlier R² sensitivity result:
 
 ```text
-R² ≈ 0.732
+R² ˜ 0.732
 ```
 
 Best early-stopping/log-target result:
 
 ```text
-R² ≈ 0.725
-MAE ≈ 28.93 minutes
+R² ˜ 0.725
+MAE ˜ 28.93 minutes
 ```
 
 ---
@@ -612,3 +611,45 @@ Final statement:
 ```text
 XGBoost was the strongest overall model for operation length. ExpectedDurationMins, anaesthetic type and procedure type were the most important predictors. Removing ExpectedDurationMins reduced performance. Consultant, procedure chapter and neural networks did not improve the model enough to justify using them. The best honest performance remained around R² 0.72–0.73, suggesting that further improvement requires richer operational and case-complexity data.
 ```
+---
+
+## 25. Sources and references
+
+### Project data source
+
+| Source | How it was used in this project |
+|---|---|
+| Internal NBT theatre scheduling dataset supplied for the project | Main source for operation records, expected duration, recorded operation length, procedure information, admission/management labels, anaesthetic type, theatre room and derived modelling targets. The original source file was not overwritten. |
+| Project notebooks and result files in this repository | Source for all reported figures, tables, model scores and sensitivity checks. |
+
+### Method and software references
+
+| Topic used in the project | Reference |
+|---|---|
+| pandas data cleaning and tabular processing | The pandas development team. pandas documentation. https://pandas.pydata.org/docs/ |
+| NumPy numerical operations | Harris, C. R. et al. (2020). Array programming with NumPy. Nature. https://numpy.org/doc/stable/ |
+| scikit-learn pipelines, preprocessing, metrics and model comparison | Pedregosa, F. et al. (2011). Scikit-learn: Machine Learning in Python. Journal of Machine Learning Research. https://scikit-learn.org/stable/ |
+| GroupKFold grouped cross-validation | scikit-learn documentation: GroupKFold. https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html |
+| Missing-value imputation inside the training pipeline | scikit-learn documentation: SimpleImputer. https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html |
+| One-hot encoding of categorical variables | scikit-learn documentation: OneHotEncoder. https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html |
+| Standardisation / scaling of numerical variables | scikit-learn documentation: StandardScaler. https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html |
+| Permutation feature importance | scikit-learn documentation: permutation_importance. https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html |
+| XGBoost model | Chen, T. and Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. https://arxiv.org/abs/1603.02754 |
+| CatBoost sensitivity model | Prokhorenkova, L. et al. (2018). CatBoost: unbiased boosting with categorical features. https://arxiv.org/abs/1706.09516 |
+| Neural network benchmark | scikit-learn documentation: MLPRegressor and MLPClassifier. https://scikit-learn.org/stable/modules/neural_networks_supervised.html |
+| Statistical modelling and logistic regression support | statsmodels documentation. https://www.statsmodels.org/stable/index.html |
+| Plotting | Matplotlib documentation and Seaborn documentation. https://matplotlib.org/stable/ and https://seaborn.pydata.org/ |
+
+### Important citation note
+
+The overrun/underrun tolerance rule used here is a project working definition, not an official NBT policy threshold. The rule was:
+
+```text
+duration_error_mins = operation_length_mins - ExpectedDurationMins
+
+duration_tolerance_mins = max(10 minutes, 10% of ExpectedDurationMins)
+
+meaningful_overrun_flag = 1 when duration_error_mins > duration_tolerance_mins
+```
+
+This definition should be confirmed with the operational team before it is used outside the project.

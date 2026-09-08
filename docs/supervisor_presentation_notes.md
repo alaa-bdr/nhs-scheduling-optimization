@@ -398,7 +398,7 @@ Free text and staff identifiers were removed for governance, privacy, interpreta
 
 Detailed procedure codes were replaced by grouped procedure features because the raw code had too many categories.
 
-Raw timestamps and end-time information were removed because they could create leakage. `operation_start_hour` was retained only for sensitivity testing.
+Raw timestamps and end-time information were removed because they could create leakage. `operation_start_hour` was retained as a provisional reconstructed feature, tested separately, and selected for the best operation-length pipeline because it improved performance slightly.
 
 Missing clinical categories were not guessed or replaced with common values.
 
@@ -418,7 +418,7 @@ Missing clinical categories were not guessed or replaced with common values.
 
 Staff identifiers were dropped because they are sensitive, high-cardinality, and could cause the model to learn individual allocation patterns rather than general scheduling rules.
 
-Raw start/end timestamps and reconstructed stage durations were dropped from the primary model. End time is leakage because it happens after the operation. Start hour was kept only as `operation_start_hour` for sensitivity testing because it was reconstructed.
+Raw start/end timestamps and reconstructed stage durations were dropped from the predictor set. End time is leakage because it happens after the operation. Start hour was kept only as the derived `operation_start_hour`; it is allowed in the selected operation-length pipeline but must be described as provisional because it was reconstructed.
 
 `ASAScore` was kept because it is clinically meaningful and available before surgery, but it was treated as categorical/ordinal clinical information rather than a normal continuous number.
 
@@ -584,7 +584,7 @@ For numeric variables, only ordinary numeric predictors such as `age_at_operatio
 
 ### Feature Configuration
 
-The winning feature configuration was `Both procedure levels`.
+The conservative notebook winner was `Both procedure levels`. The final selected operation-length pipeline was then updated to the best tested setup, which keeps both procedure levels and also uses `operation_start_hour`, `TheatreRoom`, and `session_specialty`.
 
 The final primary predictors were:
 
@@ -599,9 +599,9 @@ The final primary predictors were:
 - `procedure_code_group`
 - `procedure_code_category`
 
-`TheatreRoom` was tested but did not improve the winning primary model.
+`TheatreRoom` was tested. In the final selected operation-length pipeline it is included with `session_specialty` and `operation_start_hour` because that combination gave the best tested R2.
 
-`operation_start_hour` was tested only as sensitivity.
+`operation_start_hour` was tested separately. It was selected for the final operation-length pipeline because it improved performance, but it remains assumption-sensitive.
 
 The feature configurations tested different possibilities:
 
@@ -774,18 +774,18 @@ Top predictive features:
 
 ### Start-Hour Sensitivity
 
-Adding `operation_start_hour` improved the result slightly:
+Adding `operation_start_hour` improved the result. The strongest selected setup also included `TheatreRoom` and `session_specialty`:
 
-- MAE changed from 30.62 to 30.38 minutes
-- R2 changed from 0.712 to 0.720
+- MAE was about 29.37 minutes
+- R2 was about 0.732
 
-Again, this remains sensitivity-only because start hour was reconstructed.
+This is now the selected operation-length pipeline, but the start-hour part remains provisional because it was reconstructed.
 
 ### What This Result Means
 
 This model is the best if the aim is to predict the total expected operation length directly.
 
-It achieved R2 0.712, meaning it explained a large part of the variation in recorded operation length. This makes sense because the model can use the hospital's planned duration plus procedure and case-mix information.
+The conservative notebook model achieved R2 0.712, and the selected best-tested pipeline improved this to about R2 0.732. This makes sense because the model can use the hospital's planned duration plus procedure and case-mix information.
 
 The model also beats the hospital expected-duration benchmark, showing that the machine-learning model adds information beyond the existing booking estimate.
 
@@ -863,12 +863,12 @@ All three targets selected XGBoost.
 | Target | Winning missing strategy | Winning feature configuration | Winning model | Main result |
 |---|---|---|---|---|
 | `duration_error_mins` | Missing-aware, priority retained | Both procedure levels | XGBoost | MAE 31.11, R2 0.424 |
-| `operation_length_mins` | Missing-aware, priority retained | Both procedure levels | XGBoost | MAE 30.62, R2 0.712 |
+| `operation_length_mins` | Missing-aware, priority retained | Best tested operation-length setup | XGBoost | MAE about 29.37, R2 about 0.732 |
 | `meaningful_overrun_flag` | Missing-aware, priority retained | Both procedure levels | XGBoost | PR-AUC 0.797, recall 0.778 |
 
 ### Best Overall Modelling Target
 
-The strongest regression model was `operation_length_mins`, because it achieved R2 0.712.
+The strongest regression model was `operation_length_mins`, because the selected best-tested pipeline achieved about R2 0.732.
 
 The most operationally direct correction target was `duration_error_mins`, but it was harder to predict.
 
@@ -902,4 +902,36 @@ External or temporal validation is needed before any operational deployment.
 
 ## 12. Simple Ending For Presentation
 
-The main conclusion is that theatre scheduling error is predictable to a useful extent, but not perfectly. Procedure type, expected duration, anaesthetic type, and intended management were consistently the strongest predictors. XGBoost gave the best performance across all three prediction tasks. The direct operation-length model had the strongest numerical performance, while the overrun classifier is easiest to use for identifying high-risk cases. Start hour improved performance slightly, but it should remain sensitivity-only until the reconstructed timestamp is validated.
+The main conclusion is that theatre scheduling error is predictable to a useful extent, but not perfectly. Procedure type, expected duration, anaesthetic type, and intended management were consistently the strongest predictors. XGBoost gave the best performance across all three prediction tasks. The direct operation-length model had the strongest numerical performance, while the overrun classifier is easiest to use for identifying high-risk cases. Start hour improved performance slightly and is included in the selected operation-length pipeline, but it should be described as provisional until the reconstructed timestamp is validated.
+---
+
+## 13. Sources and references
+
+### Project data source
+
+| Source | How it was used |
+|---|---|
+| Internal NBT theatre scheduling dataset supplied for the project | Main source for cleaning, EDA, statistical analysis, model training, model testing and final project conclusions. The original source file was not overwritten. |
+| Repository notebooks and generated result files | Source for the reported figures, tables, model scores, feature-importance results and sensitivity checks. |
+
+### Method and software references
+
+| Project method | Reference |
+|---|---|
+| Data cleaning and table manipulation | pandas documentation: https://pandas.pydata.org/docs/ |
+| Numerical calculations | NumPy documentation and Harris et al. (2020): https://numpy.org/doc/stable/ |
+| ML pipelines, preprocessing, metrics and cross-validation | scikit-learn documentation and Pedregosa et al. (2011): https://scikit-learn.org/stable/ |
+| Grouped cross-validation | scikit-learn GroupKFold documentation: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html |
+| Missing-value handling | scikit-learn SimpleImputer documentation: https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html |
+| Categorical encoding | scikit-learn OneHotEncoder documentation: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html |
+| Numeric scaling | scikit-learn StandardScaler documentation: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html |
+| Feature importance | scikit-learn permutation_importance documentation: https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html |
+| XGBoost benchmark and final model | Chen and Guestrin (2016), XGBoost: https://arxiv.org/abs/1603.02754 |
+| CatBoost comparison | Prokhorenkova et al. (2018), CatBoost: https://arxiv.org/abs/1706.09516 |
+| Neural network comparison | scikit-learn neural network documentation: https://scikit-learn.org/stable/modules/neural_networks_supervised.html |
+| Logistic/statistical modelling support | statsmodels documentation: https://www.statsmodels.org/stable/index.html |
+| Plots and charts | Matplotlib and Seaborn documentation: https://matplotlib.org/stable/ and https://seaborn.pydata.org/ |
+
+### Note for supervisor
+
+The project's overrun definition is a working analysis rule, not an official hospital policy threshold. It should be reviewed with the operational team before deployment.

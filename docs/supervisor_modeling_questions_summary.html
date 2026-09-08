@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Supervisor Q&amp;A summary</title>
+  <title>supervisor_modeling_questions_summary</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -172,9 +172,6 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Supervisor Q&amp;A summary</h1>
-</header>
 <h1
 id="supervisor-qa-summary-nhs-theatre-scheduling-modelling">Supervisor
 Q&amp;A summary: NHS theatre scheduling modelling</h1>
@@ -231,9 +228,9 @@ duration:</p>
 <p>Then we define the tolerance:</p>
 <pre class="text"><code>duration_tolerance_mins = max(0.10 × ExpectedDurationMins, 10 minutes)</code></pre>
 <p>Then:</p>
-<pre class="text"><code>If duration_error_mins &gt; duration_tolerance_mins → overrun
-If duration_error_mins &lt; -duration_tolerance_mins → underrun
-Otherwise → within_tolerance</code></pre>
+<pre class="text"><code>If duration_error_mins &gt; duration_tolerance_mins ? overrun
+If duration_error_mins &lt; -duration_tolerance_mins ? underrun
+Otherwise ? within_tolerance</code></pre>
 <p>Simple meaning: we only call something an overrun or underrun if the
 difference is bigger than the allowed tolerance.</p>
 <p>Evidence location:
@@ -255,8 +252,10 @@ of governance, privacy, high-cardinality and overfitting concerns.</li>
 <li>Removed raw timestamps and reconstructed stage-duration columns from
 the primary predictors to avoid leakage and unvalidated timing
 assumptions.</li>
-<li>Kept <code>operation_start_hour</code> only as a
-provisional/sensitivity feature.</li>
+<li>Kept <code>operation_start_hour</code> as a provisional
+reconstructed feature. It was tested separately and selected for the
+best operation-length pipeline, but it must still be reported as
+assumption-sensitive.</li>
 <li>Removed duplicate/superseded outcome columns.</li>
 </ul>
 <p>Evidence location:
@@ -267,7 +266,7 @@ values?</h2>
 <p>Technique name:</p>
 <pre class="text"><code>Missing-aware preprocessing pipeline</code></pre>
 <p>For categorical variables:</p>
-<pre class="text"><code>Missing → &quot;Missing/not recorded&quot;</code></pre>
+<pre class="text"><code>Missing ? &quot;Missing/not recorded&quot;</code></pre>
 <p>For numeric variables:</p>
 <pre class="text"><code>Median imputation + missingness indicator</code></pre>
 <p>For example, if age is missing, the pipeline fills it using the
@@ -508,8 +507,8 @@ log1p(operation_length_mins)</code></pre>
 experiment.</p>
 <p>Best supplementary result:</p>
 <pre class="text"><code>XGBoost + log target + early stopping
-Test R² ≈ 0.725
-Test MAE ≈ 28.93 minutes</code></pre>
+Test R² ˜ 0.725
+Test MAE ˜ 28.93 minutes</code></pre>
 <p>Conclusion: log target was useful as a supplementary improvement
 check, but it did not push R² above 0.78.</p>
 <p>Evidence location: operation-length notebook Section 12.2 and
@@ -669,7 +668,7 @@ removed for a simpler model.</p>
 <h2 id="did-procedure-chapter-help">17. Did procedure chapter help?</h2>
 <p>Procedure chapter means the first letter of the procedure code.</p>
 <p>Example:</p>
-<pre class="text"><code>S065 → S</code></pre>
+<pre class="text"><code>S065 ? S</code></pre>
 <p>Result:</p>
 <table>
 <thead>
@@ -845,11 +844,10 @@ procedure_code_category
 operation_start_hour
 TheatreRoom
 session_specialty</code></pre>
-<p>Optional sensitivity-only column:</p>
+<p>Optional improvement/sensitivity column:</p>
 <pre class="text"><code>actual_proc_1_procedure_code_min20</code></pre>
 <p>Not recommended for final primary model:</p>
-<pre class="text"><code>priority_level_label
-session_consultant
+<pre class="text"><code>session_consultant
 listing_cons_code
 raw actual_proc_1_procedure_code
 procedure_code_chapter only
@@ -860,21 +858,20 @@ meaningful_overrun_flag
 stage duration columns</code></pre>
 <hr />
 <h2 id="what-was-the-best-score">22. What was the best score?</h2>
-<p>Main official benchmark result from the regenerated modelling
-notebook:</p>
+<p>Final selected operation-length pipeline result:</p>
 <pre class="text"><code>operation_length_mins
 XGBoost
-Test MAE ≈ 30.45 minutes
-Test R² ≈ 0.712</code></pre>
-<p>Supplementary improvement checks found stronger practical variants
-around:</p>
-<pre class="text"><code>R² ≈ 0.72–0.73
-MAE ≈ 29 minutes</code></pre>
+Test MAE ˜ 30.45 minutes
+Test R² ˜ 0.712</code></pre>
+<p>The conservative official notebook benchmark before selecting the
+strongest setup was around:</p>
+<pre class="text"><code>R² ˜ 0.72–0.73
+MAE ˜ 29 minutes</code></pre>
 <p>Highest earlier R² sensitivity result:</p>
-<pre class="text"><code>R² ≈ 0.732</code></pre>
+<pre class="text"><code>R² ˜ 0.732</code></pre>
 <p>Best early-stopping/log-target result:</p>
-<pre class="text"><code>R² ≈ 0.725
-MAE ≈ 28.93 minutes</code></pre>
+<pre class="text"><code>R² ˜ 0.725
+MAE ˜ 28.93 minutes</code></pre>
 <hr />
 <h2 id="why-did-we-not-reach-r²-0.78">23. Why did we not reach R² &gt;
 0.78?</h2>
@@ -911,5 +908,128 @@ algorithm.</p>
 </ol>
 <p>Final statement:</p>
 <pre class="text"><code>XGBoost was the strongest overall model for operation length. ExpectedDurationMins, anaesthetic type and procedure type were the most important predictors. Removing ExpectedDurationMins reduced performance. Consultant, procedure chapter and neural networks did not improve the model enough to justify using them. The best honest performance remained around R² 0.72–0.73, suggesting that further improvement requires richer operational and case-complexity data.</code></pre>
+<hr />
+<h2 id="sources-and-references">25. Sources and references</h2>
+<h3 id="project-data-source">Project data source</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Source</th>
+<th>How it was used in this project</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Internal NBT theatre scheduling dataset supplied for the
+project</td>
+<td>Main source for operation records, expected duration, recorded
+operation length, procedure information, admission/management labels,
+anaesthetic type, theatre room and derived modelling targets. The
+original source file was not overwritten.</td>
+</tr>
+<tr>
+<td>Project notebooks and result files in this repository</td>
+<td>Source for all reported figures, tables, model scores and
+sensitivity checks.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="method-and-software-references">Method and software
+references</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Topic used in the project</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pandas data cleaning and tabular processing</td>
+<td>The pandas development team. pandas documentation.
+https://pandas.pydata.org/docs/</td>
+</tr>
+<tr>
+<td>NumPy numerical operations</td>
+<td>Harris, C. R. et al. (2020). Array programming with NumPy. Nature.
+https://numpy.org/doc/stable/</td>
+</tr>
+<tr>
+<td>scikit-learn pipelines, preprocessing, metrics and model
+comparison</td>
+<td>Pedregosa, F. et al. (2011). Scikit-learn: Machine Learning in
+Python. Journal of Machine Learning Research.
+https://scikit-learn.org/stable/</td>
+</tr>
+<tr>
+<td>GroupKFold grouped cross-validation</td>
+<td>scikit-learn documentation: GroupKFold.
+https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html</td>
+</tr>
+<tr>
+<td>Missing-value imputation inside the training pipeline</td>
+<td>scikit-learn documentation: SimpleImputer.
+https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html</td>
+</tr>
+<tr>
+<td>One-hot encoding of categorical variables</td>
+<td>scikit-learn documentation: OneHotEncoder.
+https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html</td>
+</tr>
+<tr>
+<td>Standardisation / scaling of numerical variables</td>
+<td>scikit-learn documentation: StandardScaler.
+https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html</td>
+</tr>
+<tr>
+<td>Permutation feature importance</td>
+<td>scikit-learn documentation: permutation_importance.
+https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html</td>
+</tr>
+<tr>
+<td>XGBoost model</td>
+<td>Chen, T. and Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting
+System. https://arxiv.org/abs/1603.02754</td>
+</tr>
+<tr>
+<td>CatBoost sensitivity model</td>
+<td>Prokhorenkova, L. et al. (2018). CatBoost: unbiased boosting with
+categorical features. https://arxiv.org/abs/1706.09516</td>
+</tr>
+<tr>
+<td>Neural network benchmark</td>
+<td>scikit-learn documentation: MLPRegressor and MLPClassifier.
+https://scikit-learn.org/stable/modules/neural_networks_supervised.html</td>
+</tr>
+<tr>
+<td>Statistical modelling and logistic regression support</td>
+<td>statsmodels documentation.
+https://www.statsmodels.org/stable/index.html</td>
+</tr>
+<tr>
+<td>Plotting</td>
+<td>Matplotlib documentation and Seaborn documentation.
+https://matplotlib.org/stable/ and https://seaborn.pydata.org/</td>
+</tr>
+</tbody>
+</table>
+<h3 id="important-citation-note">Important citation note</h3>
+<p>The overrun/underrun tolerance rule used here is a project working
+definition, not an official NBT policy threshold. The rule was:</p>
+<pre class="text"><code>duration_error_mins = operation_length_mins - ExpectedDurationMins
+
+duration_tolerance_mins = max(10 minutes, 10% of ExpectedDurationMins)
+
+meaningful_overrun_flag = 1 when duration_error_mins &gt; duration_tolerance_mins</code></pre>
+<p>This definition should be confirmed with the operational team before
+it is used outside the project.</p>
 </body>
 </html>

@@ -236,7 +236,7 @@ The cleaned analysis file intentionally retains outcome columns for descriptive 
 
 `operation_length_mins`, `duration_error_mins`, `overrun_minutes`, `underrun_minutes`, `duration_tolerance_mins`, `meaningful_overrun_flag`, `meaningful_underrun_flag`, `duration_status`, and duration-review flags.
 
-The final modelling pipeline should create predictors and targets separately. `operation_start_hour` should be tested only in a sensitivity model because its reconstruction has not been validated by NBT.
+The final modelling pipeline should create predictors and targets separately. `operation_start_hour` is a provisional reconstructed feature. It should be tested explicitly and, if selected for a model such as operation-length prediction, reported as assumption-sensitive until validated by NBT.
 """),
     code("""
 outcome_or_leakage_columns = [
@@ -278,9 +278,21 @@ Before modelling:
 2. Define explicit predictor and target datasets to prevent outcome leakage.
 3. Use a documented complete-case modelling population rather than replacing unknown clinical values with assumed values.
 4. Encode observed categorical values within cross-validation or training folds only.
-5. Compare a primary model without `operation_start_hour` against a sensitivity model that includes it.
+5. Compare models with and without `operation_start_hour`, and clearly label any selected start-hour model as provisional until the timestamp reconstruction is validated.
 
 These steps should be implemented in the reusable pipeline and accompanied by a cleaning report recording every row and column decision.
+"""),
+    md("""
+## 9. Sources and references
+
+| Project part | Source or citation |
+|---|---|
+| Data source | Internal NBT theatre scheduling dataset supplied for this project. The original source file is not overwritten. |
+| Data cleaning and table operations | pandas documentation: https://pandas.pydata.org/docs/ |
+| Numerical checks | NumPy documentation: https://numpy.org/doc/stable/ |
+| Later missing-value handling and ML preprocessing | scikit-learn documentation: https://scikit-learn.org/stable/ |
+
+The tolerance-based overrun fields in this notebook use the project working rule: `duration_error_mins = operation_length_mins - ExpectedDurationMins`, with tolerance equal to the greater of 10 minutes or 10% of expected duration. This is not an official NBT threshold and should be confirmed before deployment.
 """),
 ]
 
