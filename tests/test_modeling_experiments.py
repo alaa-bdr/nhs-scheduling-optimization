@@ -123,7 +123,7 @@ def test_tree_importance_is_aggregated_to_original_columns() -> None:
     assert np.isclose(result["importance"].sum(), 1.0)
 
 
-def test_final_model_spec_uses_primary_winning_columns_without_start_hour() -> None:
+def test_final_model_spec_uses_conservative_classification_columns() -> None:
     spec = final_model_spec("meaningful_overrun_flag")
 
     assert spec.model_name == "XGBoost"
@@ -132,6 +132,19 @@ def test_final_model_spec_uses_primary_winning_columns_without_start_hour() -> N
     assert "ExpectedDurationMins" in spec.columns
     assert "operation_start_hour" not in spec.columns
     assert "TheatreRoom" not in spec.columns
+
+
+def test_operation_length_final_model_uses_best_tested_columns() -> None:
+    spec = final_model_spec("operation_length_mins")
+
+    assert spec.model_name == "XGBoost"
+    assert spec.feature_configuration == "Best tested operation-length setup"
+    assert spec.parameters == {"n_estimators": 350, "learning_rate": 0.08, "max_depth": 6}
+    assert "ExpectedDurationMins" in spec.columns
+    assert "priority_level_label" in spec.columns
+    assert "operation_start_hour" in spec.columns
+    assert "TheatreRoom" in spec.columns
+    assert "session_specialty" in spec.columns
 
 
 def test_save_final_model_artifact_writes_pipeline_and_metadata(tmp_path) -> None:

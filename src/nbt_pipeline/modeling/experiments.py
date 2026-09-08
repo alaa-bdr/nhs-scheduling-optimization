@@ -376,7 +376,7 @@ FINAL_MODEL_SPECS = {
     "operation_length_mins": FinalModelSpec(
         target="operation_length_mins",
         model_name="XGBoost",
-        feature_configuration="Both procedure levels",
+        feature_configuration="Best tested operation-length setup",
         columns=(
             "ExpectedDurationMins",
             "sex_national_code",
@@ -388,9 +388,12 @@ FINAL_MODEL_SPECS = {
             "priority_level_label",
             "procedure_code_group",
             "procedure_code_category",
+            "operation_start_hour",
+            "TheatreRoom",
+            "session_specialty",
         ),
         missing_strategy="missing_aware",
-        parameters={"learning_rate": 0.08, "max_depth": 6},
+        parameters={"n_estimators": 350, "learning_rate": 0.08, "max_depth": 6},
     ),
     "meaningful_overrun_flag": FinalModelSpec(
         target="meaningful_overrun_flag",
