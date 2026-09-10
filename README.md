@@ -98,6 +98,12 @@ Install dependencies with uv.
 uv sync
 ```
 
+A pip compatible dependency file is also provided for environments that expect it.
+
+```powershell
+pip install -r requirements.txt
+```
+
 Run tests.
 
 ```powershell
