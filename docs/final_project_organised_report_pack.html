@@ -1,17 +1,31 @@
 <!doctype html><html><head><meta charset="utf-8"><title>NBT Report Pack</title>
 <style>
-html{scroll-behavior:smooth} body{font-family:Arial,Helvetica,sans-serif;max-width:950px;margin:40px auto;line-height:1.55;color:#222;padding:0 18px}
-h1,h2,h3{color:#17324d} h1{font-size:28px} h2{margin-top:34px;border-bottom:1px solid #ddd;padding-bottom:4px}
-img{max-width:100%;display:block;margin:18px auto;border:1px solid #ddd} code{background:#f6f6f6;padding:1px 4px}
-table{border-collapse:collapse;width:100%;margin:16px 0} th,td{border:1px solid #ccc;padding:7px;text-align:left;vertical-align:top} th{background:#f0f4f8}
-a{color:#0b5cad}.citation-link{font-weight:500}.reference{margin:0 0 13px 0; padding-left:24px; text-indent:-24px; line-height:1.45; display:block; scroll-margin-top:24px;}
-.reference:target{background:#fff4b8; outline:2px solid #e0aa00; padding-top:4px; padding-bottom:4px;}.references h3{margin-top:18px;}
-</style></head><body>
+html{scroll-behavior:smooth}
+body{font-family:Georgia,"Times New Roman",serif;max-width:980px;margin:38px auto;line-height:1.62;color:#1f2933;padding:0 26px;background:#f5f7fb}
+.report-shell{background:#fff;padding:42px 54px;box-shadow:0 8px 30px rgba(15,35,55,.12);border-radius:16px}
+.cover{border-top:10px solid #17324d;border-bottom:1px solid #d8e0e8;padding:32px 0 26px;margin-bottom:32px;background:linear-gradient(180deg,#f7fbff,#fff)}
+.cover .label{font-family:Arial,Helvetica,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#587089;font-size:11px;margin:0 0 18px 0}
+h1{font-family:Arial,Helvetica,sans-serif;color:#102a43;font-size:31px;line-height:1.18;margin:0 0 18px 0;font-weight:700}
+.authors{font-family:Arial,Helvetica,sans-serif;color:#334e68;font-size:14px;margin:0 0 14px 0}
+.keywords{font-family:Arial,Helvetica,sans-serif;background:#eef6ff;border-left:4px solid #2f80ed;padding:10px 12px;margin:18px 0 0 0;color:#243b53}
+h2{font-family:Arial,Helvetica,sans-serif;color:#17324d;font-size:22px;margin-top:34px;border-bottom:2px solid #d9e2ec;padding-bottom:7px;break-after:avoid}
+h3{font-family:Arial,Helvetica,sans-serif;color:#243b53;font-size:17px;margin-top:24px;break-after:avoid}
+p{margin:0 0 12px 0;text-align:justify}
+img{max-width:100%;display:block;margin:18px auto 8px auto;border:1px solid #d8e0e8;border-radius:8px;box-shadow:0 2px 8px rgba(15,35,55,.10);break-inside:avoid}
+strong{color:#102a43} code{font-family:"Consolas","Courier New",monospace;background:#f1f5f9;border:1px solid #d9e2ec;padding:1px 4px;border-radius:4px;color:#102a43}
+table{border-collapse:collapse;width:100%;margin:18px 0 22px 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;break-inside:avoid} th,td{border:1px solid #cbd5e1;padding:9px 10px;text-align:left;vertical-align:top} th{background:#17324d;color:#fff;font-weight:700} tr:nth-child(even) td{background:#f8fafc}
+a{color:#0b5cad;text-decoration:none}.citation-link{font-weight:600}.reference{margin:0 0 11px 0;padding-left:24px;text-indent:-24px;line-height:1.45;display:block;scroll-margin-top:24px}.reference:target{background:#fff4b8;outline:2px solid #e0aa00;padding-top:4px;padding-bottom:4px}.references h3{margin-top:18px}
+@page{size:A4;margin:18mm 16mm 18mm 16mm}
+@media print{body{background:#fff;margin:0;max-width:none;padding:0;font-size:10.5pt;line-height:1.48}.report-shell{box-shadow:none;border-radius:0;padding:0}.cover{padding-top:18mm;min-height:165mm;display:flex;flex-direction:column;justify-content:center;break-after:page;border-top:12px solid #17324d}h1{font-size:25pt}h2{font-size:16pt;margin-top:18pt;page-break-after:avoid}h3{font-size:12.5pt;page-break-after:avoid}p{orphans:3;widows:3}img{max-height:150mm;page-break-inside:avoid}table{font-size:9.5pt;page-break-inside:avoid}a{color:#17324d}.references{font-size:9.5pt}}
+</style></head><body><div class="report-shell">
+<section class="cover">
+<p class="label">Final project report pack</p>
 <h1>Data Driven Identification and Optimisation of Workflow Bottlenecks in Operating Theatre Scheduling</h1>
-<p>Authors: Allaeddine Boudour, Mostafa Mohamed, Keith Goatley</p>
+<p class="authors">Authors: Allaeddine Boudour, Mostafa Mohamed, Keith Goatley</p>
+<p class="keywords">Keywords: operating theatre scheduling; bottleneck analysis; machine learning; XGBoost; NHS healthcare analytics</p>
+</section>
 <h2>Abstract</h2>
 <p>Operating theatres are high cost hospital resources with limited daily capacity. Inaccurate operation duration estimates can cause overruns, delays, unused capacity and reduced patient throughput. This project analysed routinely collected theatre scheduling data to identify workflow bottlenecks and test whether machine learning models could improve procedure duration prediction. The work followed a reproducible pipeline covering source cleaning, duplicate removal, leakage control, feature engineering, exploratory analysis, statistical testing, benchmark modelling and sensitivity analysis. Three targets were evaluated: meaningful overrun classification, direct operation length regression and duration error regression. XGBoost was the strongest overall model. The meaningful overrun classifier achieved 81.07% accuracy and 80.17% balanced accuracy. The selected clean operation length model achieved an R squared of about 0.732 and an MAE of about 29.37 minutes. A full procedure code sensitivity run reached a very slightly higher R squared of 0.732565, but it was not selected because the gain was tiny and added complexity. The findings show useful predictive value, although further improvement is likely to require richer operational data, including validated list order, staffed capacity, secondary procedures and delay reasons.</p>
-<p>Keywords: operating theatre scheduling; bottleneck analysis; machine learning; XGBoost; NHS healthcare analytics</p>
 <h2>1. Introduction</h2>
 <p>Operating theatre scheduling is difficult because procedure duration is affected by case mix, anaesthetic type, patient pathway, theatre allocation and operational constraints. If booked duration is too short, theatre lists overrun and staff or recovery capacity can be pressured. If booked duration is too long, expensive theatre time may be underused. Prior healthcare analytics research shows that surgical duration estimation is important for reducing delays and improving operating room efficiency (<a class="citation-link" href="#hosseini2015">Hosseini et al., 2015</a>; <a class="citation-link" href="#spence2023">Spence et al., 2023</a>).</p>
 <p>The project proposal aimed to build a data driven tool that predicts elective procedure duration and identifies workflow bottlenecks in theatre scheduling (<a class="citation-link" href="#projectproposal2026">Project proposal, 2026</a>). The completed project follows that aim closely. Rather than reporting a single model score, it builds a complete workflow from cleaning and exploratory analysis to benchmark modelling, sensitivity testing, feature importance and presentation ready figures.</p>
@@ -139,4 +153,4 @@ a{color:#0b5cad}.citation-link{font-weight:500}.reference{margin:0 0 13px 0; pad
 <h2>GitHub repository</h2>
 <p><a href="https://github.com/alaa-bdr/nhs-scheduling-optimization">Open the project repository</a></p>
 </section>
-</body></html>
+</div></body></html>
